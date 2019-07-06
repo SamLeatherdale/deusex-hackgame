@@ -1,4 +1,4 @@
-import LevelData, {LevelEdgeDirection, Point} from "../types/LevelData";
+import LevelData, {LevelEdgeDirection, NodeType, Point} from "../types/LevelData";
 import LevelNode from "./LevelNode";
 import NodeConnection from "./NodeConnection";
 import {TypedObj} from "../types/shared";
@@ -56,20 +56,15 @@ export default class Level {
 
             for (const node of [fromNode, toNode]) {
                 if (typeof node === "undefined") {
-                    console.warn(`Cell [${from.join(',')}] does not exist.`);
+                    console.error(`Cell [${from.join(',')}] does not exist.`);
                     return;
                 }
             }
 
             let connection = new NodeConnection(fromNode, toNode, direction === LevelEdgeDirection.BI);
             fromNode.addConnection(connection);
+            toNode.addConnection(connection);
             this.connections.push(connection);
-
-            let connection2 = new NodeConnection(toNode, fromNode, direction === LevelEdgeDirection.BI);
-            if (direction === LevelEdgeDirection.BI) {
-                toNode.addConnection(connection2);
-            }
-            this.connections.push(connection2);
         });
     }
 
@@ -81,6 +76,10 @@ export default class Level {
         //return this.nodes[col][row];
         return this.nodes[LevelNode.getKey(x, y)];
 
+    }
+
+    getNodeKey(key: string): LevelNode {
+        return this.nodes[key];
     }
 
     setNode(node: LevelNode) {

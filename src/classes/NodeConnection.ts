@@ -1,6 +1,31 @@
 import LevelNode from "./LevelNode";
 import {CSSProperties} from "react";
 import {PointObj} from "../types/LevelData";
+import {genericCompare} from "../types/shared";
+
+
+
+class OffsetContainer {
+    from: PointObj;
+    to: PointObj;
+
+    constructor(from: PointObj, to: PointObj) {
+        this.from = from;
+        this.to = to;
+    }
+
+    orderByColumn(): PointObj[] {
+        const points = [this.from, this.to];
+        points.sort((a, b) => genericCompare(a.x, b.x));
+        return points;
+    }
+
+    orderByRow(): PointObj[] {
+        const points = [this.from, this.to];
+        points.sort((a, b) => genericCompare(a.y, b.y));
+        return points;
+    }
+}
 
 export default class NodeConnection {
     from: LevelNode;
@@ -8,14 +33,40 @@ export default class NodeConnection {
     bi: boolean;
 
     constructor(from: LevelNode, to: LevelNode, bi: boolean) {
-        // super(from.x + offsets.from.x,
-        //     from.y + offsets.from.y,
-        //     to.x + offsets.to.x,
-        //     to.y + offsets.to.y);
 
         this.from = from;
         this.to = to;
         this.bi = bi;
+    }
+
+    /**
+     * Determines whether the given node is at the start of this connection.
+     * @param node
+     */
+    startsWith(node: LevelNode): boolean {
+        return this.bi || node.equals(this.from);
+    }
+
+    /**
+     * Determines whether the given node is at the end of this connection.
+     * @param node
+     */
+    endsWith(node: LevelNode): boolean {
+        return this.bi || node.equals(this.to);
+    }
+
+    getOtherNode(node: LevelNode): LevelNode {
+        if (this.from.equals(node)) {
+            return this.to;
+        } else if (this.to.equals(node)) {
+            return this.from;
+        } else {
+            throw new Error(`The node ${node.key} is not present in connection ${this.from.key} -> ${this.to.key}`);
+        }
+    }
+
+    isConnectedToDisabled(): boolean {
+        return (this.from.isDisabled() || this.to.isDisabled());
     }
 
     // getLength() {
@@ -24,7 +75,7 @@ export default class NodeConnection {
     //     );
     // }
 
-    calculateOffset(width: number, height: number) {
+    calculateOffset(width: number, height: number): OffsetContainer {
         const {from, to} = this;
         const linegap = 5;
 
@@ -79,7 +130,7 @@ export default class NodeConnection {
             toOffset = {x: width - linegap, y: height};
         }
 
-        return {from: fromOffset, to: toOffset};
+        return new OffsetContainer(fromOffset, toOffset);
     }
 
     /**
@@ -90,15 +141,35 @@ export default class NodeConnection {
     calculateStyles(width: number, height: number): CSSProperties {
         const props: CSSProperties = {};
         const offsets = this.calculateOffset(width, height);
+        const adjust = 25;
+
+        //Add block's position to offsets
+        offsets.from.y += this.from.y * height;
+        offsets.to.y += this.to.y * height;
+        offsets.from.x += this.from.x * width;
+        offsets.to.x += this.to.x * width;
+
+        //Apply adjustment
+        if (this.from.row !== this.to.row) {
+            offsets.orderByRow().forEach((point, i) => {
+                point.y += adjust * (i === 0 ? -1 : 1);
+            });
+        }
+
+        if (this.from.col !== this.to.col) {
+            offsets.orderByColumn().forEach((point, i) => {
+                point.x += adjust * (i === 0 ? -1 : 1);
+            });
+        }
 
         // var fT = from.offsetTop  + from.offsetHeight/2;
         // var tT = to.offsetTop    + to.offsetHeight/2;
         // var fL = from.offsetLeft + from.offsetWidth/2;
         // var tL = to.offsetLeft   + to.offsetWidth/2;
-        const fT = offsets.from.y + this.from.y * height;
-        const tT = offsets.to.y + this.to.y * height;
-        const fL = offsets.from.x + this.from.x * width;
-        const tL = offsets.to.x + this.to.x * width;
+        const fT = offsets.from.y;
+        const tT = offsets.to.y;
+        const fL = offsets.from.x;
+        const tL = offsets.to.x;
         let top, left;
 
         var CA   = Math.abs(tT - fT);

@@ -3,6 +3,8 @@ import Level from "../classes/Level";
 import LevelData from "../types/LevelData";
 import NodeComponent from "./NodeComponent";
 import ConnectionComponent from "./ConnectionComponent";
+import {TypedObj} from "../types/shared";
+import _ from "lodash";
 
 interface LevelComponentProps {
     levelData: LevelData;
@@ -21,6 +23,36 @@ export default class LevelComponent extends React.Component<LevelComponentProps,
         this.state = {
             level: new Level(this.props.levelData)
         };
+
+        this.updateNode = this.updateNode.bind(this);
+        this.updateNodes = this.updateNodes.bind(this);
+    }
+
+    /**
+     * Update a single group with the given key, and an object of values.
+     * @param key
+     * @param values
+     */
+    updateNode(key: string, values: TypedObj<any>): void {
+        this.updateNodes({[key]: values});
+    }
+
+    /**
+     * Update many groups, using a mapping of group key => an object of values.
+     */
+    updateNodes(nodeUpdates: TypedObj<any>): void {
+        this.setState(prevState => {
+            const level: Level = _.clone(prevState.level);
+
+            for (let key of Object.keys(nodeUpdates)) {
+                //level.setNode(level.getNodeKey(key).updateImmutablePath(nodeUpdates[key]));
+                level.getNodeKey(key).captured = true;
+            }
+
+            const newState: any = {};
+            newState.level = level;
+            return newState;
+        })
     }
 
     render() {
@@ -33,15 +65,21 @@ export default class LevelComponent extends React.Component<LevelComponentProps,
                     gridTemplateColumns: `repeat(${this.state.level.getColCount() + 1}, ${this.NODE_WIDTH}px)`
                 }}>
                     {Object.values(this.state.level.nodes).map(node => {
-                        return <NodeComponent key={node.key} node={node} />
+                        return <NodeComponent
+                                    key={node.key}
+                                    node={node}
+                                    updateNode={this.updateNode} />
                     })}
                 </div>
-            {this.state.level.connections.map(conn => {
-                return <ConnectionComponent
-                            conn={conn}
-                            nodeWidth={this.NODE_WIDTH}
-                            nodeHeight={this.NODE_HEIGHT} />
-            })}
+                <div className="level-connector-container">
+                    {this.state.level.connections.map(conn => {
+                        return <ConnectionComponent
+                                    key={`${conn.from.key}_${conn.to.key}`}
+                                    conn={conn}
+                                    nodeWidth={this.NODE_WIDTH}
+                                    nodeHeight={this.NODE_HEIGHT} />
+                    })}
+                </div>
             </div>
         )
     }
