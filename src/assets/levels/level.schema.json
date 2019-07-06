@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://samleatherdale.github.io/deusex/level.schema.json",
+  "title": "Level",
+  "description": "Describes the layout of a level for the game.",
+  "type": "object",
+  "properties": {
+    "nodes": {
+      "description": "Defines the nodes that appear in the level.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "The column the node appears in."
+          },
+          "y": {
+            "type": "number",
+            "description": "The row the node appears in."
+          },
+          "type": {
+            "type": "string",
+            "description": "The basic type of the node.",
+            "enum": ["api", "data", "entry", "exit", "folder", "server"]
+          },
+          "level": {
+            "type": "number",
+            "description": "The level, or capture difficulty of the node.",
+            "minimum": 1
+          },
+          "api": {
+            "type": "string",
+            "description": "If the node is an API node, the type of API node.",
+            "enum": [ "clearance", "spam", "soften", "transfer"]
+          }
+        },
+        "required": ["x", "y", "type", "level"]
+      }
+    },
+    "edges": {
+      "description": "Defines the connections between nodes.",
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": [
+          {
+            "description": "The first point in the connection.",
+            "type": "array",
+            "items": [{
+              "type": "number"
+            }, {
+              "type": "number"
+            }]
+          },
+          {
+            "description": "The second point in the connection.",
+            "type": "array",
+            "items": [{
+              "type": "number"
+            }, {
+              "type": "number"
+            }]
+          },
+          {
+            "description": "The direction of the connection.",
+            "type": "string",
+            "enum": ["ltr", "rtl", "bi"]
+          }
+        ]
+      }
+    }
+  },
+  "required": ["nodes", "edges"]
+}

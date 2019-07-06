@@ -26,14 +26,17 @@ export enum LevelEdgeDirection {
 }
 
 export enum NodeType {
+    API = "api",
+    DATA = "data",
+    ENTRY = "entry",
     EXIT = "exit",
     FOLDER = "folder",
-    ENTRY = "entry",
-    DATA = "data",
-    API = "api",
     SERVER = "server"
 }
 
 enum NodeAPIType {
-    SPAM = "spam"
+    CLEARANCE = "clearance",
+    SPAM = "spam",
+    SOFTEN = "soften",
+    TRANSFER = "transfer"
 }
