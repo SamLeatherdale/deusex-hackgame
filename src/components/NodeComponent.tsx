@@ -11,7 +11,7 @@ interface NodeComponentProps {
 
 export default class NodeComponent extends React.Component<NodeComponentProps> {
     constructor(props: NodeComponentProps) {
-        super(props)
+        super(props);
         this.onClickNode = this.onClickNode.bind(this);
     }
 

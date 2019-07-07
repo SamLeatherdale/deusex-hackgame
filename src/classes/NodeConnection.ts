@@ -77,7 +77,7 @@ export default class NodeConnection {
 
     calculateOffset(width: number, height: number): OffsetContainer {
         const {from, to} = this;
-        const linegap = 5;
+        const linegap = 1;
 
         let fromOffset: PointObj = {x: 0, y: 0};
         let toOffset: PointObj = {x: 0, y: 0};
@@ -141,7 +141,8 @@ export default class NodeConnection {
     calculateStyles(width: number, height: number): CSSProperties {
         const props: CSSProperties = {};
         const offsets = this.calculateOffset(width, height);
-        const adjust = 25;
+        const widthAdjust = width / 4;
+        const heightAdjust = height / 4;
 
         //Add block's position to offsets
         offsets.from.y += this.from.y * height;
@@ -152,13 +153,13 @@ export default class NodeConnection {
         //Apply adjustment
         if (this.from.row !== this.to.row) {
             offsets.orderByRow().forEach((point, i) => {
-                point.y += adjust * (i === 0 ? -1 : 1);
+                point.y += heightAdjust * (i === 0 ? -1 : 1);
             });
         }
 
         if (this.from.col !== this.to.col) {
             offsets.orderByColumn().forEach((point, i) => {
-                point.x += adjust * (i === 0 ? -1 : 1);
+                point.x += widthAdjust * (i === 0 ? -1 : 1);
             });
         }
 

@@ -1,0 +1,17 @@
+$font-family: 'Jura', sans-serif;
+$dx-border-light: #eca723;
+
+.tri-tl {
+    clip-path: polygon(0 0, 0% 100%, 100% 0);
+}
+
+.tri-tr {
+    clip-path: polygon(0 0, 100% 100%, 100% 0);
+}
+
+.tri-bl {
+    clip-path: polygon(0 100%, 100% 100%, 0 0);
+}
+.tri-br {
+    clip-path: polygon(0 100%, 100% 100%, 100% 0);
+}

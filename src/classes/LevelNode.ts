@@ -39,18 +39,20 @@ export default class LevelNode extends NodeData {
         }
     }
 
+    updatePath(obj: TypedObj<any>): void {
+        for (let path of Object.keys(obj)) {
+            _.set(this, path, obj[path]);
+        }
+        this.lastUpdated = Date.now();
+    }
+
     /**
      * Returns a new object with the provided object of values applied to it.
      * @param obj
      */
     updateImmutablePath(obj: TypedObj<any>): LevelNode {
         const o = new LevelNode(this);
-
-        for (let path of Object.keys(obj)) {
-            _.set(o, path, obj[path]);
-            console.log(`Updating ${path} to ${obj[path]}`)
-        }
-        o.lastUpdated = Date.now();
+        o.updatePath(obj);
         return o;
     }
 

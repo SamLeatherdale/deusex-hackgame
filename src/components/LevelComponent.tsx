@@ -15,8 +15,8 @@ interface LevelComponentState {
 }
 
 export default class LevelComponent extends React.Component<LevelComponentProps, LevelComponentState> {
-    NODE_WIDTH = 150;
-    NODE_HEIGHT = 150;
+    NODE_WIDTH = 200;
+    NODE_HEIGHT = 200;
 
     constructor(props: LevelComponentProps) {
         super(props);
@@ -45,8 +45,7 @@ export default class LevelComponent extends React.Component<LevelComponentProps,
             const level: Level = _.clone(prevState.level);
 
             for (let key of Object.keys(nodeUpdates)) {
-                //level.setNode(level.getNodeKey(key).updateImmutablePath(nodeUpdates[key]));
-                level.getNodeKey(key).captured = true;
+                level.getNodeKey(key).updatePath(nodeUpdates[key]);
             }
 
             const newState: any = {};
