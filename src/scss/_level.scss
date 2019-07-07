@@ -29,7 +29,7 @@
         padding: 16px;
 
         background-color: $dx-bg-dark;
-        opacity: 0.8;
+        opacity: 0.9;
 
         $menu-item-width: 65px;
         $menu-item-height: 50px;
@@ -52,20 +52,22 @@
             @include flex-center;
             width: $menu-item-width;
             height: $menu-item-height;
+            background-color: darken($dx-menu-item-highlight, 30%);
 
             i {
-                color: $dx-menu-highlight;
+                color: $dx-menu-item-highlight;
                 font-size: 30px;
             }
 
             &[data-disabled] {
+                background-color: transparent;
                 i {
                     color: $dx-menu-icon-disabled;
                 }
             }
 
             &:hover:not([data-disabled]) {
-                background-color: $dx-menu-highlight;
+                background-color: $dx-menu-item-highlight;
 
                 i {
                     color: $dx-menu-icon-hover;
