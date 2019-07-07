@@ -19,6 +19,60 @@
         background-repeat: no-repeat;
         background-size: contain;
     }
+
+
+    .node-menu {
+        @include custom-hex(35%);
+        box-sizing: content-box;
+        position: absolute;
+        margin: 0;
+        padding: 16px;
+
+        background-color: $dx-bg-dark;
+        opacity: 0.8;
+
+        $menu-item-width: 65px;
+        $menu-item-height: 50px;
+        > div {
+            &:first-child, &:last-child {
+                display: flex;
+                justify-content: center;
+            }
+
+            &:nth-child(2) {
+                display: flex;
+                justify-content: space-between;
+                margin: -20px 0;
+                width: $menu-item-width * 2.5;
+            }
+        }
+
+        .node-menu-item {
+            @include custom-hex(35%);
+            @include flex-center;
+            width: $menu-item-width;
+            height: $menu-item-height;
+
+            i {
+                color: $dx-menu-highlight;
+                font-size: 30px;
+            }
+
+            &[data-disabled] {
+                i {
+                    color: $dx-menu-icon-disabled;
+                }
+            }
+
+            &:hover:not([data-disabled]) {
+                background-color: $dx-menu-highlight;
+
+                i {
+                    color: $dx-menu-icon-hover;
+                }
+            }
+        }
+    }
 }
 .level-connector {
     $border-width: 2px;

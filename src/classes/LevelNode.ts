@@ -11,6 +11,8 @@ export default class LevelNode extends NodeData {
     connections: NodeConnection[] = [];
 
     captured = false;
+    fortified = false;
+    menuOpen = false;
 
     static getKey(x: number, y: number) {
         return `${x},${y}`;

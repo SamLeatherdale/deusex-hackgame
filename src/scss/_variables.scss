@@ -1,5 +1,19 @@
 $font-family: 'Jura', sans-serif;
+
+$dx-text-light: #ff9900;
+$dx-bg-light: #c58d22;
+$dx-bg-dark: #403010;
 $dx-border-light: #eca723;
+
+$dx-menu-highlight: #eca623;
+$dx-menu-icon-hover: #1d1300;
+$dx-menu-icon-disabled: #594b36;
+
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .tri-tl {
     clip-path: polygon(0 0, 0% 100%, 100% 0);
@@ -14,4 +28,16 @@ $dx-border-light: #eca723;
 }
 .tri-br {
     clip-path: polygon(0 100%, 100% 100%, 100% 0);
+}
+.hexagon {
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+@mixin custom-hex($top-width: 15%) {
+    //Clockwise starting from top right corner [x,y]
+    $left-x: 50% - ($top-width / 2);
+    $right-x: 50% + ($top-width / 2);
+    $side-height: 50%;
+    clip-path: polygon(
+        $right-x 0, 100% $side-height, $right-x 100%,
+        $left-x 100%, 0 $side-height, $left-x 0);
 }

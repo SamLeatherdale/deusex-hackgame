@@ -5,6 +5,7 @@ import NodeComponent from "./NodeComponent";
 import ConnectionComponent from "./ConnectionComponent";
 import {TypedObj} from "../types/shared";
 import _ from "lodash";
+import LevelNode from "../classes/LevelNode";
 
 interface LevelComponentProps {
     levelData: LevelData;
@@ -30,11 +31,11 @@ export default class LevelComponent extends React.Component<LevelComponentProps,
 
     /**
      * Update a single group with the given key, and an object of values.
-     * @param key
+     * @param node
      * @param values
      */
-    updateNode(key: string, values: TypedObj<any>): void {
-        this.updateNodes({[key]: values});
+    updateNode(node: LevelNode, values: TypedObj<any>): void {
+        this.updateNodes({[node.key]: values});
     }
 
     /**

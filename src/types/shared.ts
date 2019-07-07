@@ -10,6 +10,6 @@ export function genericCompare(val1: any, val2: any) {
     return val1 > val2 ? 1 : 0;
 }
 
-export function condAttr(condition) {
-    return condition ? "" : undefined;
+export function condAttr(condition, truthValue: any = "") {
+    return condition ? truthValue : undefined;
 }
