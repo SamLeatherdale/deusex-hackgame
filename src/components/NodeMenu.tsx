@@ -1,10 +1,10 @@
 import React from "react";
 import LevelNode from "../classes/LevelNode";
-import {condAttr, TypedObj} from "../types/shared";
+import {condAttr, NodeSelection, TypedObj} from "../types/shared";
 
 interface NodeMenuProps {
     node: LevelNode;
-    updateNode: (node: LevelNode, values: TypedObj<any>) => void
+    updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void
 }
 
 interface MenuItem {
@@ -29,7 +29,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps> {
         if (this.props.node.canBeCaptured()) {
             this.props.node.captured = true;
             this.props.node.menuOpen = false;
-            this.props.updateNode(this.props.node, {});
+            this.props.updateNodes(this.props.node, {});
         }
     }
 

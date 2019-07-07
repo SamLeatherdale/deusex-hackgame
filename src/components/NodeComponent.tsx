@@ -1,13 +1,13 @@
 import React from "react";
 import LevelNode from "../classes/LevelNode";
 import NodeTypeSprite from "../classes/NodeTypeSprite";
-import {condAttr, TypedObj} from "../types/shared";
+import {condAttr, NodeSelection, TypedObj} from "../types/shared";
 import {NodeType} from "../types/LevelData";
 import NodeMenu from "./NodeMenu";
 
 interface NodeComponentProps {
     node: LevelNode;
-    updateNode: (node: LevelNode, values: TypedObj<any>) => void
+    updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void
 }
 
 export default class NodeComponent extends React.Component<NodeComponentProps> {
@@ -16,9 +16,11 @@ export default class NodeComponent extends React.Component<NodeComponentProps> {
         this.onClickNode = this.onClickNode.bind(this);
     }
 
-    onClickNode() {
+    onClickNode(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+        e.stopPropagation();
         if (!this.props.node.isDisabled()) {
-            this.props.updateNode(this.props.node, {menuOpen: true})
+            this.props.updateNodes(true, {menuOpen: false});
+            this.props.updateNodes(this.props.node, {menuOpen: true})
         }
     }
 
@@ -32,15 +34,17 @@ export default class NodeComponent extends React.Component<NodeComponentProps> {
 
         return (
             <div className="level-node"
-                 onClick={this.onClickNode}
                  data-disabled={condAttr(node.isDisabled())}
                  data-captured={condAttr(node.appearsCaptured())}
                  style={{
                     gridColumn: `${x + 1} / span 1`,
                     gridRow: `${y + 1} / span 1`,
                 }}>
-                {menuOpen && <NodeMenu node={node} updateNode={this.props.updateNode} />}
-                <img src={sprite} alt={node.type} />
+                {menuOpen && <NodeMenu node={node} updateNodes={this.props.updateNodes} />}
+                <img
+                    src={sprite}
+                    alt={node.type}
+                    onClick={this.onClickNode} />
             </div>
         );
     }

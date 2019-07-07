@@ -3,7 +3,7 @@ import Level from "../classes/Level";
 import LevelData from "../types/LevelData";
 import NodeComponent from "./NodeComponent";
 import ConnectionComponent from "./ConnectionComponent";
-import {TypedObj} from "../types/shared";
+import {NodeSelection, TypedObj} from "../types/shared";
 import _ from "lodash";
 import LevelNode from "../classes/LevelNode";
 
@@ -27,6 +27,7 @@ export default class LevelComponent extends React.Component<LevelComponentProps,
 
         this.updateNode = this.updateNode.bind(this);
         this.updateNodes = this.updateNodes.bind(this);
+        this.onClickBg = this.onClickBg.bind(this);
     }
 
     /**
@@ -35,18 +36,22 @@ export default class LevelComponent extends React.Component<LevelComponentProps,
      * @param values
      */
     updateNode(node: LevelNode, values: TypedObj<any>): void {
-        this.updateNodes({[node.key]: values});
+        this.updateNodes(node, values);
     }
 
-    /**
-     * Update many groups, using a mapping of group key => an object of values.
-     */
-    updateNodes(nodeUpdates: TypedObj<any>): void {
+    updateNodes(nodes: NodeSelection, values: Partial<LevelNode>): void {
         this.setState(prevState => {
             const level: Level = _.clone(prevState.level);
 
-            for (let key of Object.keys(nodeUpdates)) {
-                level.getNodeKey(key).updatePath(nodeUpdates[key]);
+            let updateNodes;
+            if (nodes === true) {
+                updateNodes = Object.values(this.state.level.nodes);
+            } else if (nodes instanceof LevelNode) {
+                updateNodes = [nodes];
+            }
+
+            for (let node of updateNodes) {
+                node.updatePath(values);
             }
 
             const newState: any = {};
@@ -55,10 +60,15 @@ export default class LevelComponent extends React.Component<LevelComponentProps,
         })
     }
 
+    onClickBg(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+        const target = e.target;
+        this.updateNodes(true, {menuOpen: false});
+    }
+
     render() {
 
         return (
-            <div className="level-container">
+            <div className="level-container" onClick={this.onClickBg}>
                 <div className="level-grid" style={{
                     display: "grid",
                     gridTemplateRows: `repeat(${this.state.level.getRowCount() + 1}, ${this.NODE_HEIGHT}px)`,
@@ -68,7 +78,7 @@ export default class LevelComponent extends React.Component<LevelComponentProps,
                         return <NodeComponent
                                     key={node.key}
                                     node={node}
-                                    updateNode={this.updateNode} />
+                                    updateNodes={this.updateNodes} />
                     })}
                 </div>
                 <div className="level-connector-container">
