@@ -22,28 +22,32 @@
 
 
     .node-menu {
-        @include custom-hex(35%);
-        box-sizing: content-box;
         position: absolute;
-        margin: 0;
-        padding: 16px;
-
-        background-color: $dx-bg-dark;
-        opacity: 0.9;
 
         $menu-item-width: 65px;
         $menu-item-height: 50px;
-        > div {
-            &:first-child, &:last-child {
-                display: flex;
-                justify-content: center;
-            }
 
-            &:nth-child(2) {
-                display: flex;
-                justify-content: space-between;
-                margin: -20px 0;
-                width: $menu-item-width * 2.5;
+        .node-menu-items {
+            @include custom-hex(35%);
+            box-sizing: content-box;
+            margin: 0;
+            padding: 16px;
+
+            background-color: $dx-bg-dark;
+            opacity: 0.9;
+
+            > div {
+                &:first-child, &:last-child {
+                    display: flex;
+                    justify-content: center;
+                }
+
+                &:nth-child(2) {
+                    display: flex;
+                    justify-content: space-between;
+                    margin: -20px 0;
+                    width: $menu-item-width * 2.5;
+                }
             }
         }
 
@@ -72,6 +76,39 @@
                 i {
                     color: $dx-menu-icon-hover;
                 }
+            }
+        }
+
+        .node-menu-tooltip {
+            position: absolute;
+            background-color: black;
+            color: white;
+            z-index: 5;
+
+            $vertical: ("top", "bottom");
+            $horizontal: ("left", "right");
+            $placements: join($vertical, $horizontal);
+            $transform-amount: (-100%, 100%);
+
+            @each $pos in $placements {
+                &[data-placement=#{$pos}] {
+                    #{$pos}: 0;
+
+                    $index: index($vertical, $pos);
+                    @if ($index) {
+                        transform: translateX(-50%) translateY(nth($transform-amount, $index));
+                        left: 50%;
+                    } @else {
+                        $index: index($horizontal, $pos);
+                        transform: translateY(-50%) translateX(nth($transform-amount, $index));
+                        top: 50%;
+                    }
+                }
+            }
+
+            > div {
+                text-transform: uppercase;
+                white-space: nowrap;
             }
         }
     }
