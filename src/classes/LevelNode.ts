@@ -1,6 +1,6 @@
-import {NodeData, NodeType} from "../types/LevelData";
+import {NodeData, NodeType} from "./LevelData";
 import NodeConnection from "./NodeConnection";
-import {TypedObj} from "../types/shared";
+import {TypedObj} from "../shared";
 import _ from "lodash";
 
 export default class LevelNode extends NodeData {

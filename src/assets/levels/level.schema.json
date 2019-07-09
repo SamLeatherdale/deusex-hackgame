@@ -5,6 +5,10 @@
   "description": "Describes the layout of a level for the game.",
   "type": "object",
   "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the level, as shown to the user."
+    },
     "nodes": {
       "description": "Defines the nodes that appear in the level.",
       "type": "array",

@@ -1,6 +1,6 @@
 import React, {CSSProperties} from "react";
 import NodeConnection from "../classes/NodeConnection";
-import {condAttr} from "../types/shared";
+import {condAttr} from "../shared";
 
 interface ConnectionComponentProps {
     conn: NodeConnection;

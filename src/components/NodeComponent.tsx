@@ -1,8 +1,8 @@
 import React, {CSSProperties} from "react";
 import LevelNode from "../classes/LevelNode";
 import NodeTypeSprite from "../classes/NodeTypeSprite";
-import {condAttr, NodeSelection, TypedObj} from "../types/shared";
-import {NodeType} from "../types/LevelData";
+import {condAttr, NodeSelection, TypedObj} from "../shared";
+import {NodeType} from "../classes/LevelData";
 import NodeMenu, {NodeMenuAction} from "./NodeMenu";
 
 interface NodeComponentProps {

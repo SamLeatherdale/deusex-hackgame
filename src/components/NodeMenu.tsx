@@ -1,6 +1,6 @@
 import React, {CSSProperties} from "react";
 import LevelNode from "../classes/LevelNode";
-import {condAttr, NodeSelection, TypedObj} from "../types/shared";
+import {condAttr, NodeSelection, TypedObj} from "../shared";
 
 export enum NodeMenuAction {
     CAPTURE,

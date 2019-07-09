@@ -1,4 +1,5 @@
-export default interface LevelData {
+export default class LevelData {
+    title: string;
     nodes: NodeData[];
     edges: LevelEdgeData[];
 }

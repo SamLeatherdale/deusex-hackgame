@@ -4,7 +4,7 @@ import spriteEntry from "../assets/sprites/entry.png";
 import spriteExit from "../assets/sprites/exit.png";
 import spriteFolder from "../assets/sprites/folder.png";
 import spriteServer from "../assets/sprites/server.png";
-import {NodeType} from "../types/LevelData";
+import {NodeType} from "./LevelData";
 
 export default class NodeTypeSprite {
     static getSprite(type: NodeType): string {

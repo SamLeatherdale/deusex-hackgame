@@ -1,7 +1,7 @@
 import LevelNode from "./LevelNode";
 import {CSSProperties} from "react";
-import {PointObj} from "../types/LevelData";
-import {genericCompare} from "../types/shared";
+import {PointObj} from "./LevelData";
+import {genericCompare} from "../shared";
 
 
 
@@ -173,10 +173,10 @@ export default class NodeConnection {
         const tL = offsets.to.x;
         let top, left;
 
-        var CA   = Math.abs(tT - fT);
-        var CO   = Math.abs(tL - fL);
-        var H    = Math.sqrt(CA*CA + CO*CO);
-        var ANG  = 180 / Math.PI * Math.acos( CA/H );
+        const CA = Math.abs(tT - fT);
+        const CO = Math.abs(tL - fL);
+        const H = Math.sqrt(CA * CA + CO * CO);
+        let ANG = 180 / Math.PI * Math.acos(CA / H);
 
         if(tT > fT){
             top  = (tT-fT)/2 + fT;

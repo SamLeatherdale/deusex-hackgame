@@ -1,4 +1,4 @@
-import LevelNode from "../classes/LevelNode";
+import LevelNode from "./classes/LevelNode";
 
 export type TypedObjKey = string | number;
 export type TypedObj<T> = {

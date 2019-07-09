@@ -1,25 +1,25 @@
 import React from "react";
 import Level from "../classes/Level";
-import LevelData from "../types/LevelData";
+import LevelData from "../classes/LevelData";
 import NodeComponent from "./NodeComponent";
 import ConnectionComponent from "./ConnectionComponent";
-import {NodeSelection, TypedObj} from "../types/shared";
+import {NodeSelection, TypedObj} from "../shared";
 import _ from "lodash";
 import LevelNode from "../classes/LevelNode";
 
-interface LevelComponentProps {
+interface LevelGridProps {
     levelData: LevelData;
 }
 
-interface LevelComponentState {
+interface LevelGridState {
     level: Level;
 }
 
-export default class LevelComponent extends React.Component<LevelComponentProps, LevelComponentState> {
+export default class LevelGrid extends React.Component<LevelGridProps, LevelGridState> {
     NODE_WIDTH = 200;
     NODE_HEIGHT = 200;
 
-    constructor(props: LevelComponentProps) {
+    constructor(props: LevelGridProps) {
         super(props);
         this.state = {
             level: new Level(this.props.levelData)

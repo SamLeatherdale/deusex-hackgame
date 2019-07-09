@@ -1,13 +1,17 @@
-import LevelData, {LevelEdgeDirection, NodeType, Point} from "../types/LevelData";
+import LevelData, {LevelEdgeDirection, NodeType, Point} from "./LevelData";
 import LevelNode from "./LevelNode";
 import NodeConnection from "./NodeConnection";
-import {TypedObj} from "../types/shared";
+import {TypedObj} from "../shared";
 
 export default class Level {
     nodes: TypedObj<LevelNode> = {}; //Matrix of nodes, by columns, then rows
     gridRows = 0;
     gridColumns = 0;
     connections: NodeConnection[] = [];
+
+    static getLevels() {
+
+    }
 
     constructor(level: LevelData) {
         //Adjust base to 0
