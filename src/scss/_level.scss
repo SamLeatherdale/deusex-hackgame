@@ -22,11 +22,22 @@
         background-size: contain;
     }
 
+    .level-node-level-text {
+        color: white;
+        position: absolute;
+        z-index: $zindex-node-level-text;
+        top: 50%;
+        right: 8px;
+        transform: translateY(-50%);
+        font-size: 18px;
+    }
+
     .level-node-mask {
         $mask-color: rgb(0, 161, 255);
         mask-position: center;
         mask-repeat: no-repeat;
         position: absolute;
+        z-index: $zindex-node-mask;
         top: 0;
         left: 0;
         width: 100%;
@@ -62,100 +73,96 @@
             }
         }
     }
+}
+.node-menu {
+    position: absolute;
+    z-index: $zindex-node-menu;
 
-    .level-node-img {
+    $menu-item-width: 65px;
+    $menu-item-height: 50px;
+
+    .node-menu-items {
+        @include custom-hex(35%);
+        box-sizing: content-box;
+        margin: 0;
+        padding: 16px;
+
+        background-color: $dx-bg-dark;
+        opacity: 0.9;
+
+        > div {
+            &:first-child, &:last-child {
+                display: flex;
+                justify-content: center;
+            }
+
+            &:nth-child(2) {
+                display: flex;
+                justify-content: space-between;
+                margin: -20px 0;
+                width: $menu-item-width * 2.5;
+            }
+        }
     }
 
+    .node-menu-item {
+        @include custom-hex(35%);
+        @include flex-center;
+        width: $menu-item-width;
+        height: $menu-item-height;
+        background-color: darken($dx-menu-item-highlight, 30%);
 
-    .node-menu {
-        position: absolute;
+        i {
+            color: $dx-menu-item-highlight;
+            font-size: 30px;
+        }
 
-        $menu-item-width: 65px;
-        $menu-item-height: 50px;
-
-        .node-menu-items {
-            @include custom-hex(35%);
-            box-sizing: content-box;
-            margin: 0;
-            padding: 16px;
-
-            background-color: $dx-bg-dark;
-            opacity: 0.9;
-
-            > div {
-                &:first-child, &:last-child {
-                    display: flex;
-                    justify-content: center;
-                }
-
-                &:nth-child(2) {
-                    display: flex;
-                    justify-content: space-between;
-                    margin: -20px 0;
-                    width: $menu-item-width * 2.5;
-                }
+        &[data-disabled] {
+            background-color: transparent;
+            i {
+                color: $dx-menu-icon-disabled;
             }
         }
 
-        .node-menu-item {
-            @include custom-hex(35%);
-            @include flex-center;
-            width: $menu-item-width;
-            height: $menu-item-height;
-            background-color: darken($dx-menu-item-highlight, 30%);
+        &:hover:not([data-disabled]) {
+            background-color: $dx-menu-item-highlight;
 
             i {
-                color: $dx-menu-item-highlight;
-                font-size: 30px;
+                color: $dx-menu-icon-hover;
             }
+        }
+    }
 
-            &[data-disabled] {
-                background-color: transparent;
-                i {
-                    color: $dx-menu-icon-disabled;
-                }
-            }
+    .node-menu-tooltip {
+        position: absolute;
+        background-color: black;
+        color: white;
+        z-index: $zindex-node-menu-tooltip;
 
-            &:hover:not([data-disabled]) {
-                background-color: $dx-menu-item-highlight;
+        $vertical: ("top", "bottom");
+        $horizontal: ("left", "right");
+        $placements: join($vertical, $horizontal);
+        $transform-amount: (-100%, 100%);
 
-                i {
-                    color: $dx-menu-icon-hover;
+        @each $pos in $placements {
+            &[data-placement=#{$pos}] {
+                #{$pos}: 0;
+
+                $index: index($vertical, $pos);
+                @if ($index) {
+                    transform: translateX(-50%) translateY(nth($transform-amount, $index));
+                    left: 50%;
+                } @else {
+                    $index: index($horizontal, $pos);
+                    transform: translateY(-50%) translateX(nth($transform-amount, $index));
+                    top: 50%;
                 }
             }
         }
 
-        .node-menu-tooltip {
-            position: absolute;
-            background-color: black;
-            color: white;
-            z-index: 5;
-
-            $vertical: ("top", "bottom");
-            $horizontal: ("left", "right");
-            $placements: join($vertical, $horizontal);
-            $transform-amount: (-100%, 100%);
-
-            @each $pos in $placements {
-                &[data-placement=#{$pos}] {
-                    #{$pos}: 0;
-
-                    $index: index($vertical, $pos);
-                    @if ($index) {
-                        transform: translateX(-50%) translateY(nth($transform-amount, $index));
-                        left: 50%;
-                    } @else {
-                        $index: index($horizontal, $pos);
-                        transform: translateY(-50%) translateX(nth($transform-amount, $index));
-                        top: 50%;
-                    }
-                }
-            }
-
-            > div {
-                text-transform: uppercase;
-                white-space: nowrap;
-            }
+        > div {
+            text-transform: uppercase;
+            white-space: nowrap;
         }
     }
 }

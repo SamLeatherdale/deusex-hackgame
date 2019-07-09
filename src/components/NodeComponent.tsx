@@ -101,7 +101,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                 <div className="level-node"
                      data-disabled={condAttr(node.isDisabled())}
                      onClick={this.onClickNode}
-                >
+                    >
                     {menuOpen &&
                         <NodeMenu node={node}
                                   onNodeMenuAction={this.onNodeMenuAction} />}
@@ -110,10 +110,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                          data-captured={condAttr(node.appearsCaptured())}
                          style={maskStyle} />
                     <div className="level-node-img" style={backgroundStyle} />
-                    {/*<img*/}
-                    {/*    className="level-node-img"*/}
-                    {/*    src={sprite}*/}
-                    {/*    alt={node.type} />*/}
+                    <div className="level-node-level-text">{this.props.node.level}</div>
                 </div>
             </div>
         );

@@ -10,6 +10,11 @@ $dx-menu-item-highlight: #eca623;
 $dx-menu-icon-hover: #1d1300;
 $dx-menu-icon-disabled: #594b36;
 
+$zindex-node-mask: 5;
+$zindex-node-level-text: 6;
+$zindex-node-menu: 10;
+$zindex-node-menu-tooltip: 11;
+
 @mixin flex-center {
     display: flex;
     align-items: center;
