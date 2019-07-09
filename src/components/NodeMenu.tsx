@@ -2,9 +2,16 @@ import React, {CSSProperties} from "react";
 import LevelNode from "../classes/LevelNode";
 import {condAttr, NodeSelection, TypedObj} from "../types/shared";
 
+export enum NodeMenuAction {
+    CAPTURE,
+    NUKE,
+    STOP,
+    FORTIFY
+}
+
 interface NodeMenuProps {
     node: LevelNode;
-    updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void
+    onNodeMenuAction: (e: Event, action: NodeMenuAction) => void;
 }
 
 interface NodeMenuState {
@@ -17,7 +24,7 @@ interface MenuItem {
     placement: string;
     className: string;
     enabled: boolean;
-    onClick: () => void;
+    action: NodeMenuAction;
 }
 
 export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuState> {
@@ -28,33 +35,8 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
             hoveredItem: ""
         };
 
-        this.captureNode = this.captureNode.bind(this);
-        this.nukeNode = this.nukeNode.bind(this);
-        this.stopNode = this.stopNode.bind(this);
-        this.fortifyNode = this.fortifyNode.bind(this);
-
         this.onMouseOver = this.onMouseOver.bind(this);
         this.onMouseOut = this.onMouseOut.bind(this);
-    }
-
-    captureNode() {
-        if (this.props.node.canBeCaptured()) {
-            this.props.node.captured = true;
-            this.props.node.menuOpen = false;
-            this.props.updateNodes(this.props.node, {});
-        }
-    }
-
-    nukeNode() {
-
-    }
-
-    stopNode() {
-
-    }
-
-    fortifyNode() {
-
     }
 
     onMouseOver(itemKey: string) {
@@ -74,7 +56,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
                 placement: "top",
                 className: "fas fa-flag",
                 enabled: !node.captured,
-                onClick: this.captureNode,
+                action: NodeMenuAction.CAPTURE,
             },
             {
                 title: "Nuke",
@@ -82,7 +64,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
                 placement: "left",
                 className: "fas fa-radiation",
                 enabled: !node.captured,
-                onClick: this.nukeNode,
+                action: NodeMenuAction.NUKE,
             },
             {
                 title: "Stop!",
@@ -90,7 +72,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
                 placement: "right",
                 className: "fas fa-hand-paper",
                 enabled: node.captured,
-                onClick: this.stopNode,
+                action: NodeMenuAction.STOP,
             },
             {
                 title: "Fortify",
@@ -98,7 +80,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
                 placement: "bottom",
                 className: "fas fa-shield-alt",
                 enabled: node.captured,
-                onClick: this.fortifyNode
+                action: NodeMenuAction.FORTIFY,
             }
         ];
 
@@ -109,7 +91,8 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
                 className="node-menu-item"
                 onMouseOver={condAttr(menuItem.enabled, () => this.onMouseOver(menuItem.title))}
                 onMouseOut={condAttr(menuItem.enabled, () => this.onMouseOut(menuItem.title))}
-                onClick={condAttr(menuItem.enabled, menuItem.onClick)}>
+                onClick={condAttr(menuItem.enabled,
+                    (e) => this.props.onNodeMenuAction(e, menuItem.action))}>
                 <i className={menuItem.className} />
             </li>
         ));

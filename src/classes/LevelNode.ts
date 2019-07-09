@@ -30,6 +30,10 @@ export default class LevelNode extends NodeData {
         }
     }
 
+    /*---------
+     * OO stuff
+     *---------*/
+
     init(config: NodeData) {
         this.row = config.y;
         this.col = config.x;
@@ -62,6 +66,11 @@ export default class LevelNode extends NodeData {
         return this.key === node.key;
     }
 
+    /*---------
+     * Capture state accessors
+     *---------*/
+
+
     addConnection(connection: NodeConnection) {
         this.connections.push(connection);
     }
@@ -88,5 +97,12 @@ export default class LevelNode extends NodeData {
 
     appearsCaptured() {
         return this.captured && this.type !== NodeType.ENTRY;
+    }
+
+    /**
+     * Gets the time to capture the node in ms.
+     */
+    getCaptureTime(): number {
+        return this.level * 400;
     }
 }

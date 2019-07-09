@@ -42,3 +42,13 @@ $dx-menu-icon-disabled: #594b36;
         $right-x 0, 100% $side-height, $right-x 100%,
         $left-x 100%, 0 $side-height, $left-x 0);
 }
+
+$animation-capture: capture;
+@keyframes #{$animation-capture} {
+    from {
+        height: 0;
+    }
+    to {
+        height: 100%;
+    }
+}

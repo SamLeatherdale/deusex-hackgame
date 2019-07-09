@@ -1,23 +1,69 @@
 .level-grid {
     position: relative;
 }
+.level-node-grid {
+    @include flex-center;
+    padding: 50px;
+}
 .level-node {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 80px;
+    height: 100px;
+    position: relative;
 
     &[data-disabled] {
         opacity: 0.3;
     }
 
-    &[data-captured] {
-        border: 1px solid lightskyblue;
-    }
-
-    > div {
+    div.level-node-img {
+        width: 100%;
+        height: 100%;
         background-position: center;
         background-repeat: no-repeat;
         background-size: contain;
+    }
+
+    .level-node-mask {
+        $mask-color: rgb(0, 161, 255);
+        mask-position: center;
+        mask-repeat: no-repeat;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        &:before {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            content: '';
+            display: block;
+            width: 100%;
+            height: 0;
+            background-color: rgba($mask-color, 0.2);
+
+
+            animation-name: $animation-capture;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
+            animation-play-state: paused;
+            animation-duration: inherit; //Set on parent
+        }
+
+        &[data-capturing] {
+            &:before {
+                animation-play-state: running;
+            }
+        }
+        &[data-captured] {
+            &:before {
+                height: 100%;
+                background-color: rgba($mask-color, 0.5);
+            }
+        }
+    }
+
+    .level-node-img {
     }
 
 
