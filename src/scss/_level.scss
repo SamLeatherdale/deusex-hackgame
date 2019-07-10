@@ -1,5 +1,13 @@
+.level-container {
+    position: relative;
+}
 .level-grid {
     position: relative;
+}
+.level-connector-container {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .level-node-grid {
     @include flex-center;

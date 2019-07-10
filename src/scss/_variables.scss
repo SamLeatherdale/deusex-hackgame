@@ -15,6 +15,11 @@ $zindex-node-level-text: 6;
 $zindex-node-menu: 10;
 $zindex-node-menu-tooltip: 11;
 
+@mixin dx-border {
+    border: 2px solid $dx-border-light;
+    border-radius: 8px;
+}
+
 @mixin flex-center {
     display: flex;
     align-items: center;

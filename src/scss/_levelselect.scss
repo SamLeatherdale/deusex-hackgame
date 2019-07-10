@@ -1,0 +1,10 @@
+.level-select-grid {
+    display: flex;
+    flex-wrap: wrap;
+
+    .level-select-level {
+        @extend .dx-button;
+        width: 150px;
+        margin: 16px;
+    }
+}

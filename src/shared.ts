@@ -1,5 +1,7 @@
 import LevelNode from "./classes/LevelNode";
 
+export const DXBorderColor = "#eca723";
+
 export type TypedObjKey = string | number;
 export type TypedObj<T> = {
     [key in TypedObjKey]: T;

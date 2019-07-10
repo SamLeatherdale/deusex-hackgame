@@ -1,5 +1,6 @@
-import React, {CSSProperties} from "react";
+import React, {CSSProperties, HTMLAttributes} from "react";
 import {Color} from "csstype";
+import {DXBorderColor, TypedObj} from "../shared";
 
 interface RhombusContainerProps {
     id?: string;
@@ -11,6 +12,7 @@ interface RhombusContainerProps {
     bgColor: Color;
     fgColor: Color;
     lineWidth: number;
+    props?: TypedObj<any>
 }
 
 export enum RhombusCorner {
@@ -25,6 +27,11 @@ export enum RhombusCorner {
  */
 export default class RhombusContainer extends React.Component<RhombusContainerProps> {
     static defaultProps = {
+        width: 20,
+        height: 20,
+        offset: -3,
+        bgColor: "black",
+        fgColor: DXBorderColor,
         lineWidth: 1
     };
 
@@ -79,8 +86,12 @@ export default class RhombusContainer extends React.Component<RhombusContainerPr
             }
         });
 
+        const remainingProps = this.props.props ? this.props.props : {};
+
         return (
-            <div id={this.props.id} className={["rhombus-container", this.props.className].join('')}>
+            <div id={this.props.id}
+                 className={["rhombus-container", this.props.className].join(' ')}
+                 {...remainingProps}>
                 <div className="rhombus-corners">
                     {els}
                 </div>
