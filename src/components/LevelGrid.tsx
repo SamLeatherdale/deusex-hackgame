@@ -7,7 +7,7 @@ import ConnectionComponent from "./ConnectionComponent";
 import {NodeSelection} from "../shared";
 import LevelNode from "../classes/LevelNode";
 import Player from "../classes/Player";
-import RhombusContainer, {RhombusCorner} from "./RhombusContainer";
+import RhombusContainer, {RhombusCorner} from "../classes/RhombusContainer";
 
 interface LevelGridProps {
     level: Level;

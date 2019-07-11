@@ -6,5 +6,8 @@
         20 0"/>
     <line x1="20" x2="40" y1="0" y2="0" stroke="#000" />
     <polyline points="40 0 60 20" stroke="#000" />
-    <path d="M 0 0 A 50 50 0 0 1 150 250 " stroke="#000" fill-opacity="0" />
+    <polyline points="60 20 60 40" stroke="#000" />
+    <path d="M 0 0 A 50 50 0 0 1 50 50 " stroke="#000" fill-opacity="0" />
+    <path d="M 60 40 A 50 50 0 0 1 40 60 " stroke="#000" fill-opacity="0" />
+
 </svg>

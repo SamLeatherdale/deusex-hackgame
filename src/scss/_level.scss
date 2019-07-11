@@ -147,7 +147,7 @@
 
     .node-menu-tooltip {
         position: absolute;
-        background-color: black;
+        background-color: $bg-default;
         color: white;
         z-index: $zindex-node-menu-tooltip;
 

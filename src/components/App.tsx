@@ -1,7 +1,7 @@
 import React from 'react';
 import LevelGrid from "./LevelGrid";
 import LevelData from "../classes/LevelData";
-import RhombusContainer, {RhombusCorner} from "./RhombusContainer";
+import RhombusContainer, {RhombusCorner} from "../classes/RhombusContainer";
 import LevelSelect from "./LevelSelect";
 import AllLevelData from "../classes/LevelDataLoader";
 import {condAttr, TypedObj} from "../shared";
@@ -116,60 +116,64 @@ export default class App extends React.Component<{}, AppState> {
         ];
 
         return (
-            <RhombusContainer
+            <div
                 id="app-container"
-                corners={[RhombusCorner.TOP_LEFT, RhombusCorner.BOTTOM_RIGHT]}
+                style={RhombusContainer.getBorderImage({
+                    corners: [RhombusCorner.TOP_LEFT, RhombusCorner.BOTTOM_RIGHT]
+                })}
             >
                 {(currentView === AppView.LevelGrid && levelStatus !== LevelStatus.INCOMPLETE) &&
                 <div className="level-modal-bg">
                     <div className="level-modal">
-                        <RhombusContainer className="level-modal-body">
-                            <RhombusContainer className="level-modal-title">
+                        <div className="level-modal-body" style={RhombusContainer.getBorderImage()}>
+                            <div className="level-modal-title" style={RhombusContainer.getBorderImage()}>
                                 {levelStatus === LevelStatus.COMPLETE ? "Access Granted" : "Connection Severed"}
-                            </RhombusContainer>
+                            </div>
                             <p>{levelStatus === LevelStatus.COMPLETE ? "Hacking attempt has succeeded." : "Hacking attempt has failed."}</p>
-                        </RhombusContainer>
-                        <RhombusContainer className="dx-button"
-                                          props={{onClick: this.dismissLevelModal}}>
+                        </div>
+                        <div style={RhombusContainer.getBorderImage()}
+                             className="dx-button"
+                             onClick={this.dismissLevelModal}>
                             OK
-                        </RhombusContainer>
+                        </div>
                     </div>
                 </div>}
                 <div className="app-view-buttons">
                     <div className="app-status-bar">
                         <div className="hack-device">
                             <div>MHD-995 Hacking Device</div>
-                            <RhombusContainer className="dx-box" corners={[RhombusCorner.BOTTOM_LEFT]}>
+                            <div className="dx-box" style={RhombusContainer.getBorderImage({
+                                corners: [RhombusCorner.BOTTOM_LEFT]
+                            })}>
                                 Scanning for trace...
-                            </RhombusContainer>
+                            </div>
                         </div>
                         <div>
-                            <RhombusContainer className="dx-box player-item-bar">
+                            <div className="dx-box player-item-bar" style={RhombusContainer.getBorderImage()}>
                                 {Array.from(player.items.values()).map(item => (
-                                    <div className="player-item">
+                                    <div key={item.type}
+                                        className="player-item">
                                         <i className={item.getIcon()} />
                                         <span className="player-item-count">{item.count}</span>
                                     </div>
                                 ))}
-                            </RhombusContainer>
+                            </div>
                         </div>
                     </div>
                     {buttonData.map(button => (
-                        <RhombusContainer
+                        <div
                             key={button.view}
                             className="dx-button"
-                            corners={[RhombusCorner.TOP_RIGHT, RhombusCorner.BOTTOM_LEFT]}
-                            props={{
-                                onClick: () => this.changeView(button.view),
-                                "data-active": condAttr(this.state.currentView === button.view)
-                            }}
+                            style={RhombusContainer.getBorderImage()}
+                            onClick={() => this.changeView(button.view)}
+                            data-active={condAttr(this.state.currentView === button.view)}
                         >
                             {button.title}
-                        </RhombusContainer>
+                        </div>
                     ))}
                 </div>
                 {view}
-            </RhombusContainer>
+            </div>
         );
     }
 }

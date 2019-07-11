@@ -1,0 +1,11 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+     width="60" height="60" viewBox="0 0 60 60">
+    <path d="M 0 20 A 50 50 0 0 1 20 0" stroke="#eca723" fill="none" />
+    <line x1="20" y1="0" x2="40" y2="0" stroke="#eca723" />
+    <line x1="40" y1="0" x2="60" y2="20" stroke="#eca723" />
+    <line x1="60" y1="20" x2="60" y2="40" stroke="#eca723" />
+    <line x1="20" y1="60" x2="0" y2="40" stroke="#eca723" />
+    <line x1="0" y1="40" x2="0" y2="20" stroke="#eca723" />
+    <path d="M 60 40 A 50 50 0 0 1 40 60" stroke="#eca723" fill="none" />
+    <line x1="40" y1="60" x2="20" y2="60" stroke="#eca723" />
+</svg>

@@ -1,6 +1,6 @@
 import React from "react";
 import LevelData from "../classes/LevelData";
-import RhombusContainer, {RhombusCorner} from "./RhombusContainer";
+import RhombusContainer, {RhombusCorner} from "../classes/RhombusContainer";
 
 interface LevelSelectProps {
     levels: LevelData[];
@@ -15,16 +15,15 @@ export default class LevelSelect extends React.Component<LevelSelectProps> {
             <div className='level-select-grid'>
                 {this.props.levels.map((level, i) => {
                     return (
-                        <RhombusContainer
+                        <div
                             key={i}
-                            corners={[RhombusCorner.TOP_RIGHT, RhombusCorner.BOTTOM_LEFT]}
-                            offset={-3}
                             className={'level-select-level'}
-                            props={{onClick: () => this.props.onSelectLevel(level)}}
+                            style={RhombusContainer.getBorderImage()}
+                            onClick={() => this.props.onSelectLevel(level)}
                         >
                             <div>{`Level ${i + 1}`}</div>
                             <div>{`Nodes: ${level.nodes.length}`}</div>
-                        </RhombusContainer>
+                        </div>
                     );
                 })}
             </div>
