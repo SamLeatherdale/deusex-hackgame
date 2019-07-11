@@ -1,4 +1,4 @@
-import React, {CSSProperties, HTMLAttributes} from "react";
+import React, {CSSProperties} from "react";
 import {Color} from "csstype";
 import {DXBorderColor, TypedObj} from "../shared";
 

@@ -1,14 +1,11 @@
 .level-container {
+    //position: relative;
+}
+.level-grid-container {
     position: relative;
 }
 .level-grid {
     position: relative;
-}
-.level-modal-bg {}
-.level-connector-container {
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 .level-node-grid {
     @include flex-center;
@@ -180,6 +177,11 @@
             white-space: nowrap;
         }
     }
+}
+.level-connector-container {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .level-connector {
     $border-width: 2px;

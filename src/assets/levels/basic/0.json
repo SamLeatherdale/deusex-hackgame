@@ -1,0 +1,20 @@
+{
+  "$schema": "../level.schema.json",
+  "nodes": [
+    {
+      "x": 0,
+      "y": 0,
+      "type": "entry",
+      "level": 1
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "type": "exit",
+      "level": 1
+    }
+  ],
+  "edges": [
+    [[0,0], [0,1], "bi"]
+  ]
+}

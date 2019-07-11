@@ -1,6 +1,6 @@
 import React, {CSSProperties} from "react";
 import LevelNode from "../classes/LevelNode";
-import {condAttr, NodeSelection, TypedObj} from "../shared";
+import {condAttr} from "../shared";
 import * as autoBind from "auto-bind";
 
 export enum NodeMenuAction {

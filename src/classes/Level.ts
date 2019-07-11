@@ -1,4 +1,4 @@
-import LevelData, {LevelEdgeDirection, NodeType, Point} from "./LevelData";
+import LevelData, {LevelEdgeDirection, Point} from "./LevelData";
 import LevelNode from "./LevelNode";
 import NodeConnection from "./NodeConnection";
 import {TypedObj} from "../shared";

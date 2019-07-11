@@ -14,6 +14,7 @@ $zindex-node-mask: 5;
 $zindex-node-level-text: 6;
 $zindex-node-menu: 10;
 $zindex-node-menu-tooltip: 11;
+$zindex-level-modal-bg: 100;
 
 @mixin dx-border {
     border: 2px solid $dx-border-light;

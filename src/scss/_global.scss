@@ -19,19 +19,3 @@ html, body {
 #root, #app-container {
     background-color: black;
 }
-#app-container {
-    @include dx-border;
-    padding: 20px;
-    flex-grow: 1;
-}
-.app-view-buttons {
-    display: flex;
-    justify-content: center;
-
-    > .dx-button {
-        text-align: center;
-        width: 100px;
-        padding: 10px 20px;
-        margin: 0 8px;
-    }
-}
