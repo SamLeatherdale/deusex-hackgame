@@ -2,12 +2,22 @@ import LevelData, {LevelEdgeDirection, NodeType, Point} from "./LevelData";
 import LevelNode from "./LevelNode";
 import NodeConnection from "./NodeConnection";
 import {TypedObj} from "../shared";
+import _ from "lodash";
+
+export enum LevelStatus {
+    INCOMPLETE,
+    COMPLETE,
+    FAILED
+}
 
 export default class Level {
     nodes: TypedObj<LevelNode> = {}; //Matrix of nodes, by columns, then rows
     gridRows = 0;
     gridColumns = 0;
     connections: NodeConnection[] = [];
+    status: LevelStatus = LevelStatus.INCOMPLETE;
+
+    lastUpdated: number;
 
     static getLevels() {
 
@@ -70,6 +80,13 @@ export default class Level {
             toNode.addConnection(connection);
             this.connections.push(connection);
         });
+    }
+
+    updatePath(obj: TypedObj<any>): void {
+        for (let path of Object.keys(obj)) {
+            _.set(this, path, obj[path]);
+        }
+        this.lastUpdated = Date.now();
     }
 
     /**

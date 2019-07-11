@@ -4,11 +4,14 @@
 .rhombus-corner {
     position: absolute;
 }
-.dx-button {
+.dx-box {
+    @include dx-border;
     display: inline-block;
     padding: 15px;
-    @include dx-border;
     color: white;
+}
+.dx-button {
+    @extend .dx-box;
     cursor: pointer;
 
     &:hover, &[data-active] {

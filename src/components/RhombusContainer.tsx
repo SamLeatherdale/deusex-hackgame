@@ -27,6 +27,7 @@ export enum RhombusCorner {
  */
 export default class RhombusContainer extends React.Component<RhombusContainerProps> {
     static defaultProps = {
+        corners: [RhombusCorner.BOTTOM_LEFT, RhombusCorner.TOP_RIGHT],
         width: 20,
         height: 20,
         offset: -3,

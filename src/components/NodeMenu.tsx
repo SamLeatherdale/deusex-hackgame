@@ -1,6 +1,7 @@
 import React, {CSSProperties} from "react";
 import LevelNode from "../classes/LevelNode";
 import {condAttr, NodeSelection, TypedObj} from "../shared";
+import * as autoBind from "auto-bind";
 
 export enum NodeMenuAction {
     CAPTURE,
@@ -35,8 +36,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
             hoveredItem: ""
         };
 
-        this.onMouseOver = this.onMouseOver.bind(this);
-        this.onMouseOut = this.onMouseOut.bind(this);
+        autoBind.react(this);
     }
 
     onMouseOver(itemKey: string) {
@@ -79,7 +79,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
                 subtitle: "Detection: 100%",
                 placement: "bottom",
                 className: "fas fa-shield-alt",
-                enabled: node.captured,
+                enabled: node.canBeFortified(),
                 action: NodeMenuAction.FORTIFY,
             }
         ];

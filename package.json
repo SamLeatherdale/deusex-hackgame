@@ -8,6 +8,7 @@
     "@types/react-dom": "^16.8.4",
     "@types/webpack": "^4.4.34",
     "@types/webpack-env": "^1.13.9",
+    "auto-bind": "^2.1.0",
     "lodash": "^4.17.11",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",

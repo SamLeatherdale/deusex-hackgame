@@ -1,14 +1,20 @@
 import React from "react";
-import Level from "../classes/Level";
+import _ from "lodash";
+import * as autoBind from "auto-bind";
+
+import Level, {LevelStatus} from "../classes/Level";
 import LevelData from "../classes/LevelData";
 import NodeComponent from "./NodeComponent";
 import ConnectionComponent from "./ConnectionComponent";
 import {NodeSelection, TypedObj} from "../shared";
-import _ from "lodash";
 import LevelNode from "../classes/LevelNode";
+import Player from "../classes/Player";
+import RhombusContainer, {RhombusCorner} from "./RhombusContainer";
 
 interface LevelGridProps {
     levelData: LevelData;
+    player: Player;
+    onLevelComplete: (level: Level) => void;
 }
 
 interface LevelGridState {
@@ -25,16 +31,9 @@ export default class LevelGrid extends React.Component<LevelGridProps, LevelGrid
             level: new Level(this.props.levelData)
         };
 
-        this.updateNode = this.updateNode.bind(this);
-        this.updateNodes = this.updateNodes.bind(this);
-        this.onClickBg = this.onClickBg.bind(this);
+        autoBind.react(this);
     }
 
-    /**
-     * Update a single group with the given key, and an object of values.
-     * @param node
-     * @param values
-     */
     updateNode(node: LevelNode, values: TypedObj<any>): void {
         this.updateNodes(node, values);
     }
@@ -60,29 +59,49 @@ export default class LevelGrid extends React.Component<LevelGridProps, LevelGrid
         })
     }
 
+    updateLevel(values: Partial<Level>): void {
+        this.setState(prevState => {
+            const level: Level = _.clone(prevState.level);
+
+            level.updatePath(values);
+
+            if (typeof values.status !== "undefined") {
+                this.props.onLevelComplete(level);
+            }
+
+            const newState: any = {};
+            newState.level = level;
+            return newState;
+        })
+    }
+
     onClickBg(e: React.MouseEvent<HTMLElement, MouseEvent>) {
         const target = e.target;
         this.updateNodes(true, {menuOpen: false});
     }
 
     render() {
+        const {level} = this.state;
 
         return (
             <div className="level-container" onClick={this.onClickBg}>
                 <div className="level-grid" style={{
                     display: "grid",
-                    gridTemplateRows: `repeat(${this.state.level.getRowCount() + 1}, ${this.NODE_HEIGHT}px)`,
-                    gridTemplateColumns: `repeat(${this.state.level.getColCount() + 1}, ${this.NODE_WIDTH}px)`
+                    gridTemplateRows: `repeat(${level.getRowCount() + 1}, ${this.NODE_HEIGHT}px)`,
+                    gridTemplateColumns: `repeat(${level.getColCount() + 1}, ${this.NODE_WIDTH}px)`
                 }}>
-                    {Object.values(this.state.level.nodes).map(node => {
+                    {Object.values(level.nodes).map(node => {
                         return <NodeComponent
                                     key={node.key}
                                     node={node}
-                                    updateNodes={this.updateNodes} />
+                                    player={this.props.player}
+                                    updateNodes={this.updateNodes}
+                                    updateLevel={this.updateLevel}
+                        />
                     })}
                 </div>
                 <div className="level-connector-container">
-                    {this.state.level.connections.map(conn => {
+                    {level.connections.map(conn => {
                         return <ConnectionComponent
                                     key={`${conn.from.key}_${conn.to.key}`}
                                     conn={conn}

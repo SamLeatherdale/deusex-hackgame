@@ -1,17 +1,23 @@
 import React, {CSSProperties} from "react";
 import LevelNode from "../classes/LevelNode";
 import NodeTypeSprite from "../classes/NodeTypeSprite";
-import {condAttr, NodeSelection, TypedObj} from "../shared";
+import {condAttr, NodeSelection} from "../shared";
 import {NodeType} from "../classes/LevelData";
 import NodeMenu, {NodeMenuAction} from "./NodeMenu";
+import * as autoBind from "auto-bind";
+import Player from "../classes/Player";
+import Level, {LevelStatus} from "../classes/Level";
 
 interface NodeComponentProps {
     node: LevelNode;
-    updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void
+    player: Player;
+    updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void;
+    updateLevel: (values: Partial<Level>) => void;
 }
 
 class NodeComponentState {
     capturing: boolean = false;
+    fortifying: boolean = false;
 }
 
 export default class NodeComponent extends React.Component<NodeComponentProps, NodeComponentState> {
@@ -19,12 +25,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         super(props);
         this.state = new NodeComponentState();
 
-        this.onClickNode = this.onClickNode.bind(this);
-        this.onNodeMenuAction = this.onNodeMenuAction.bind(this);
-        this.captureNode = this.captureNode.bind(this);
-        this.nukeNode = this.nukeNode.bind(this);
-        this.stopNode = this.stopNode.bind(this);
-        this.fortifyNode = this.fortifyNode.bind(this);
+        autoBind.react(this);
     }
 
     onClickNode(e: React.MouseEvent<HTMLElement, MouseEvent>) {
@@ -55,13 +56,19 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     captureNode() {
-        if (this.props.node.canBeCaptured()) {
-            this.props.updateNodes(this.props.node, {menuOpen: false});
+        const {node, updateNodes} = this.props;
+        if (node.canBeCaptured()) {
+            updateNodes(node, {menuOpen: false});
             this.setState({capturing: true});
 
             setTimeout(() => {
-                this.props.updateNodes(this.props.node, {captured: true});
-            }, this.props.node.getCaptureTime())
+                updateNodes(node, {captured: true});
+                this.setState({capturing: false});
+
+                if (node.type === NodeType.EXIT) {
+                    this.props.updateLevel({status: LevelStatus.COMPLETE});
+                }
+            }, node.getCaptureTime(this.props.player))
         }
     }
 
@@ -74,11 +81,20 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     fortifyNode() {
+        if (this.props.node.canBeFortified()) {
+            this.props.updateNodes(this.props.node, {menuOpen: false});
+            this.setState({fortifying: true});
 
+            setTimeout(() => {
+                this.props.updateNodes(this.props.node, {fortified: true});
+                this.setState({fortifying: false});
+            }, this.props.node.getFortifyTime(this.props.player))
+        }
     }
 
     render() {
-        const {node} = this.props;
+        const {node, player} = this.props;
+        const {capturing, fortifying} = this.state;
         const {x, y, menuOpen} = node;
 
         const sprite = NodeTypeSprite.getSprite(node.type);
@@ -86,11 +102,15 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         const backgroundStyle: CSSProperties = {
             backgroundImage: spriteUrl,
         };
-        const maskStyle: CSSProperties = {
+
+        let maskStyle: CSSProperties = {
             mask: spriteUrl,
             WebkitMaskImage: spriteUrl,
-            animationDuration: `${this.props.node.getCaptureTime()}ms`
         };
+        if (capturing || fortifying) {
+            const duration = capturing ? node.getCaptureTime(player) : node.getFortifyTime(player);
+            maskStyle.animationDuration = `${duration}ms`;
+        }
 
         return (
             <div className="level-node-grid"
@@ -106,8 +126,9 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                         <NodeMenu node={node}
                                   onNodeMenuAction={this.onNodeMenuAction} />}
                     <div className="level-node-mask"
-                         data-capturing={condAttr(this.state.capturing)}
-                         data-captured={condAttr(node.appearsCaptured())}
+                         data-capturing={condAttr(capturing)}
+                         data-fortifying={condAttr(fortifying)}
+                         data-captured={condAttr(!(capturing || fortifying) && node.appearsCaptured())}
                          style={maskStyle} />
                     <div className="level-node-img" style={backgroundStyle} />
                     <div className="level-node-level-text">{this.props.node.level}</div>

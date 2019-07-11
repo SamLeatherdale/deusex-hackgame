@@ -2,6 +2,8 @@ import {NodeData, NodeType} from "./LevelData";
 import NodeConnection from "./NodeConnection";
 import {TypedObj} from "../shared";
 import _ from "lodash";
+import Player from "./Player";
+import {UpgradeType} from "./Upgrade";
 
 export default class LevelNode extends NodeData {
     lastUpdated: number;
@@ -83,6 +85,10 @@ export default class LevelNode extends NodeData {
         return (this.isConnectedToCaptured() && !this.isDisabled());
     }
 
+    canBeFortified() {
+        return this.captured && !this.fortified;
+    }
+
     isConnectedToCaptured() {
         for (const conn of this.connections) {
             if (conn.endsWith(this)) {
@@ -102,7 +108,13 @@ export default class LevelNode extends NodeData {
     /**
      * Gets the time to capture the node in ms.
      */
-    getCaptureTime(): number {
-        return this.level * 400;
+    getCaptureTime(player: Player): number {
+        const captureUpgrade = player.upgrades.get(UpgradeType.CAPTURE);
+        const captureSlowdownMult = 1 / captureUpgrade.currentLevel;
+        return this.level * 1000 * (captureSlowdownMult);
+    }
+
+    getFortifyTime(player: Player): number {
+        return this.getCaptureTime(player);
     }
 }
