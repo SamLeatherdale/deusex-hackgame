@@ -17,7 +17,7 @@ export default class Level {
     connections: NodeConnection[] = [];
     status: LevelStatus = LevelStatus.INCOMPLETE;
 
-    isPlayerDetected = true;
+    isPlayerDetected = false;
 
     lastUpdated: number;
 

@@ -42,6 +42,7 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
             if (newTime <= 0) {
                 newTime = 0;
                 clearInterval(this.tickHandle);
+                this.props.onTimeOut();
             }
             return {timeLeft: newTime};
         });
