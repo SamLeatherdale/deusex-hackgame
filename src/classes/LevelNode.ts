@@ -117,4 +117,15 @@ export default class LevelNode extends NodeData {
     getFortifyTime(player: Player): number {
         return this.getCaptureTime(player);
     }
+
+    /**
+     * Gets the detection chance out of 100.
+     */
+    getDetectionChance(player: Player): number {
+        let chance = (this.level * 20) - (player.upgrades.get(UpgradeType.STEALTH).currentLevel * 15);
+        if (chance < 15) {
+            chance = 15;
+        }
+        return chance;
+    }
 }

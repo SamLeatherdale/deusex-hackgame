@@ -17,11 +17,9 @@ export default class Level {
     connections: NodeConnection[] = [];
     status: LevelStatus = LevelStatus.INCOMPLETE;
 
+    isPlayerDetected = true;
+
     lastUpdated: number;
-
-    static getLevels() {
-
-    }
 
     constructor(level: LevelData) {
         //Adjust base to 0

@@ -8,8 +8,6 @@ interface LevelSelectProps {
 
 export default class LevelSelect extends React.Component<LevelSelectProps> {
     render() {
-        console.log(this.props.levels);
-
         return (
             <div className='level-select-grid'>
                 {this.props.levels.map((level, i) => {

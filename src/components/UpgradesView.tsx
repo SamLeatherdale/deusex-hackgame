@@ -33,7 +33,7 @@ export default class UpgradesView extends React.Component<UpgradesViewProps> {
                                     <h5>Current Level:</h5>
                                     <p>
                                         {upgrade.getLevelDescription(upgrade.currentLevel)}
-                                    </p>}
+                                    </p>
                                 </React.Fragment>}
                             {upgrade.currentLevel < upgrade.maxLevel &&
                                 <React.Fragment>

@@ -20,7 +20,7 @@ export enum AppView {
 
 class AppState {
     currentView: AppView = AppView.LevelGrid;
-    level: Level = new Level(Object.values(AllLevelData)[0]);
+    level: Level = new Level(Object.values(AllLevelData)[2]);
     player: Player = new Player();
 }
 
@@ -75,20 +75,24 @@ export default class App extends React.Component<{}, AppState> {
         //this.setState({levelStatus: level.status});
     }
 
+    onLevelFailed() {
+        this.updateLevel({status: LevelStatus.FAILED});
+    }
+
     dismissLevelModal() {
         this.setState({currentView: AppView.LevelSelect});
     }
 
     render() {
-        const {currentView, player} = this.state;
+        const {currentView, player, level} = this.state;
         const levelStatus = this.state.level.status;
 
         let view;
         switch (currentView) {
             case AppView.LevelGrid:
                 view = <LevelGrid
-                            player={this.state.player}
-                            level={this.state.level}
+                            player={player}
+                            level={level}
                             updateLevel={this.updateLevel}
                         />;
                 break;
@@ -100,7 +104,7 @@ export default class App extends React.Component<{}, AppState> {
                 break;
             case AppView.Upgrades:
                 view = <UpgradesView
-                            player={this.state.player}
+                            player={player}
                             updatePlayer={this.updatePlayer} />;
                 break;
         }
@@ -158,11 +162,13 @@ export default class App extends React.Component<{}, AppState> {
                                 corners: [RhombusCorner.BOTTOM_LEFT],
                                 bgColor: DXBGLight
                             })}>
-                                Scanning for trace...
+                                {level.isPlayerDetected ? "Trace Detected! Evade!" : "Scanning for trace..."}
                             </div>
                         </div>
                         <div className="app-status-bar-right">
-                            <TraceStatusBox />
+                            {level.isPlayerDetected &&
+                                <TraceStatusBox time={10} onTimeOut={this.onLevelFailed} />
+                            }
                             <div className="dx-box player-item-bar">
                                 {Array.from(player.items.values()).map(item => (
                                     <div key={item.type}

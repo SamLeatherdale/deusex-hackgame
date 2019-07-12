@@ -1,7 +1,7 @@
 import React, {CSSProperties} from "react";
 import LevelNode from "../classes/LevelNode";
 import NodeTypeSprite from "../classes/NodeTypeSprite";
-import {condAttr, NodeSelection} from "../shared";
+import {condAttr, NodeSelection, rollTheDice} from "../shared";
 import {NodeType} from "../classes/LevelData";
 import NodeMenu, {NodeMenuAction} from "./NodeMenu";
 import * as autoBind from "auto-bind";
@@ -56,7 +56,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     captureNode() {
-        const {node, updateNodes} = this.props;
+        const {node, updateNodes, updateLevel, player} = this.props;
         if (node.canBeCaptured()) {
             updateNodes(node, {menuOpen: false});
             this.setState({capturing: true});
@@ -66,7 +66,9 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                 this.setState({capturing: false});
 
                 if (node.type === NodeType.EXIT) {
-                    this.props.updateLevel({status: LevelStatus.COMPLETE});
+                    updateLevel({status: LevelStatus.COMPLETE});
+                } else if (rollTheDice(node.getDetectionChance(player))) {
+                    updateLevel({isPlayerDetected: true});
                 }
             }, node.getCaptureTime(this.props.player))
         }
@@ -124,6 +126,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                     >
                     {menuOpen &&
                         <NodeMenu node={node}
+                                  player={player}
                                   onNodeMenuAction={this.onNodeMenuAction} />}
                     <div className="level-node-mask"
                          data-capturing={condAttr(capturing)}

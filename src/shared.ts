@@ -25,3 +25,17 @@ export function condAttr(condition, truthValue: any = "") {
 export function leftPad(str: string, len: number, pad: string = "0"): string {
     return pad.repeat(len - str.length) + str;
 }
+
+export function rollTheDice(chance: number): boolean {
+    return getRandomInt(0, 100) < chance;
+}
+
+/**
+ * @param min Inclusive minimum
+ * @param max Exclusive maximum
+ */
+export function getRandomInt(min: number, max: number): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}

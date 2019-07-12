@@ -31,7 +31,32 @@ $app-container-padding: 20px;
     }
     .app-status-bar-right {
         display: flex;
+
+        > div {
+            
+        }
     }
+
+    .trace-status {
+        display: flex;
+        text-transform: uppercase;
+        margin-right: 16px;
+
+        .trace-status-title {
+            color: white;
+        }
+        .trace-status-subtitle {
+            color: $dx-text-light;
+            text-align: right;
+        }
+        .trace-status-timer {
+            font-size: 32px;
+            width: 70px;
+            text-align: right;
+            margin-left: 8px;
+        }
+    }
+
     .player-item-bar {
         display: flex;
 

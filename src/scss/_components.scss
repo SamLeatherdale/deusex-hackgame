@@ -31,15 +31,3 @@ $dx-box-border-width: 20;
         @extend  .dx-box-fill;
     }
 }
-
-.trace-status {
-    display: flex;
-    text-transform: uppercase;
-
-    .trace-status-title {
-        color: white;
-    }
-    .trace-status-subtitle {
-        color: $dx-text-light;
-    }
-}

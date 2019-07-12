@@ -2,6 +2,7 @@ import React, {CSSProperties} from "react";
 import LevelNode from "../classes/LevelNode";
 import {condAttr} from "../shared";
 import * as autoBind from "auto-bind";
+import Player from "../classes/Player";
 
 export enum NodeMenuAction {
     CAPTURE,
@@ -12,6 +13,7 @@ export enum NodeMenuAction {
 
 interface NodeMenuProps {
     node: LevelNode;
+    player: Player;
     onNodeMenuAction: (e: Event, action: NodeMenuAction) => void;
 }
 
@@ -48,11 +50,11 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
     }
 
     render() {
-        const {node} = this.props;
+        const {node, player} = this.props;
         const menuItemData: MenuItem[] = [
             {
                 title: "Capture",
-                subtitle: "Detection: 100%",
+                subtitle: `Detection: ${node.getDetectionChance(player)}%`,
                 placement: "top",
                 className: "fas fa-flag",
                 enabled: !node.captured,
