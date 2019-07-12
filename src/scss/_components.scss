@@ -4,17 +4,42 @@
 .rhombus-corner {
     position: absolute;
 }
+
+$dx-box-border-width: 20;
+
+//noinspection CssOverwrittenProperties
 .dx-box {
     @include dx-border;
     display: inline-block;
     padding: 15px;
     color: white;
+
+    border-image-source: $dx-svg-border-button;
+    border-image-slice: $dx-box-border-width;
+    border-image-width: #{$dx-box-border-width}px;
+    border-image-repeat: stretch;
+}
+.dx-box-fill {
+    border-image-slice: $dx-box-border-width fill;
+    border-image-source: $dx-svg-border-button-hover;
 }
 .dx-button {
     @extend .dx-box;
     cursor: pointer;
 
     &:hover, &[data-active] {
-        background-color: $dx-bg-light;
+        @extend  .dx-box-fill;
+    }
+}
+
+.trace-status {
+    display: flex;
+    text-transform: uppercase;
+
+    .trace-status-title {
+        color: white;
+    }
+    .trace-status-subtitle {
+        color: $dx-text-light;
     }
 }

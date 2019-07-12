@@ -1,6 +1,5 @@
 import React from "react";
 import LevelData from "../classes/LevelData";
-import RhombusContainer, {RhombusCorner} from "../classes/RhombusContainer";
 
 interface LevelSelectProps {
     levels: LevelData[];
@@ -17,8 +16,7 @@ export default class LevelSelect extends React.Component<LevelSelectProps> {
                     return (
                         <div
                             key={i}
-                            className={'level-select-level'}
-                            style={RhombusContainer.getBorderImage()}
+                            className='level-select-level dx-button'
                             onClick={() => this.props.onSelectLevel(level)}
                         >
                             <div>{`Level ${i + 1}`}</div>

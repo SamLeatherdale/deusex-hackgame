@@ -29,13 +29,19 @@ export default class UpgradesView extends React.Component<UpgradesViewProps> {
                         <h4 className="upgrade-title">{upgrade.title}</h4>
                         <div className="upgrade-description">
                             {upgrade.currentLevel > 0 &&
-                                <p><h5>Current Level:</h5>
-                                    {upgrade.getLevelDescription(upgrade.currentLevel)}
-                                </p>}
+                                <React.Fragment>
+                                    <h5>Current Level:</h5>
+                                    <p>
+                                        {upgrade.getLevelDescription(upgrade.currentLevel)}
+                                    </p>}
+                                </React.Fragment>}
                             {upgrade.currentLevel < upgrade.maxLevel &&
-                                <p><h5>Next Level:</h5>
-                                    {upgrade.getLevelDescription(upgrade.currentLevel + 1)}
-                                </p>}
+                                <React.Fragment>
+                                    <h5>Next Level:</h5>
+                                    <p>
+                                        {upgrade.getLevelDescription(upgrade.currentLevel + 1)}
+                                    </p>
+                                </React.Fragment>}
                         </div>
                         <div className="upgrade-dots">
                         {Array(upgrade.maxLevel).fill(0).map((z, i) => (

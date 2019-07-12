@@ -1,30 +1,18 @@
-import {CSSProperties} from "react";
+import  {CSSProperties} from "react";
 import {Color} from "csstype";
-import {DXBorderColor, TypedObj} from "../shared";
-import {Point} from "./LevelData";
+import {DXBGLight, DXBorderColor} from "../shared";
 import encodeSVG from "svg-to-dataurl";
-
-interface RhombusContainerProps {
-    id?: string;
-    className?: string;
-    corners: RhombusCorner[];
-    offset: number;
-    width: number;
-    height: number;
-    bgColor: Color;
-    fgColor: Color;
-    lineWidth: number;
-    props?: TypedObj<any>
-}
 
 interface SVGProps {
     corners: RhombusCorner[];
     width: number;
     height: number;
     fgColor: Color;
+    bgColor: Color;
     lineWidth: number;
     buffer: number;
     radiusDegrees: number;
+    variableName?: string;
 }
 
 export enum RhombusCorner {
@@ -41,35 +29,30 @@ interface LineProps {
     y2: number;
 }
 
-class Arc {
-    start: Point;
-    end: Point;
-    arc: Point;
-    rotation: number;
-    isLarge: boolean;
-    isSweep: boolean;
-
-    constructor(start: Point, end: Point, arc: Point, rotation = 0, isLarge = false, isSweep = false) {
-        this.start = start;
-        this.end = end;
-        this.arc = arc;
-        this.rotation = rotation;
-        this.isLarge = isLarge;
-        this.isSweep = isSweep;
-    }
-}
 /**
  * Renders a Deus Ex style rhombus container with triangular edges on the specified sides.
  */
 export default class RhombusContainer {
-    static cached: Map<string, string> = new Map();
-    static cachedIdx: number = 1;
+    private static addedDefaults = false;
+    private static cached: Map<string, string> = new Map();
+    private static cachedIdx: number = 1;
 
-    static getCSSVariable(svg: string): string {
+    private static svgDefaultProps: SVGProps = {
+        corners: [RhombusCorner.BOTTOM_LEFT, RhombusCorner.TOP_RIGHT],
+        width: 20,
+        height: 20,
+        fgColor: DXBorderColor,
+        bgColor: "none",
+        lineWidth: 3,
+        buffer: 20,
+        radiusDegrees: 20
+    };
+
+    private static getCSSVariable(svg: string, name?: string): string {
         if (CSS && CSS.supports('color', 'var(--test)')) {
             let css = RhombusContainer.cached.get(svg);
             if (!css) {
-                css = `--custom-svg-border-${RhombusContainer.cachedIdx++}`;
+                css = `--dx-svg-border-${name ? name : RhombusContainer.cachedIdx++}`;
                 document.documentElement.style.setProperty(css, svg);
                 RhombusContainer.cached.set(svg, css);
             }
@@ -77,17 +60,13 @@ export default class RhombusContainer {
         }
     }
 
-    static svgDefaultProps = {
-        corners: [RhombusCorner.BOTTOM_LEFT, RhombusCorner.TOP_RIGHT],
-        width: 20,
-        height: 20,
-        fgColor: DXBorderColor,
-        lineWidth: 3,
-        buffer: 20,
-        radiusDegrees: 20
-    };
+    private static addDefaults() {
+        RhombusContainer.addedDefaults = true;
+        RhombusContainer.getBorderImage({variableName: "button"});
+        RhombusContainer.getBorderImage({bgColor: DXBGLight, variableName: "button-hover"});
+    }
 
-    static getLineProps(corner: RhombusCorner, props: SVGProps): LineProps {
+    private static getLineProps(corner: RhombusCorner, props: SVGProps): LineProps {
         const {width, height, buffer} = props;
         const xBuf = width + buffer;
         const yBuf = height + buffer;
@@ -104,7 +83,7 @@ export default class RhombusContainer {
         }
     }
 
-    static getBufferProps(corner: RhombusCorner, props: SVGProps): LineProps {
+    private static getBufferProps(corner: RhombusCorner, props: SVGProps): LineProps {
         const {width, height, buffer} = props;
         const xBuf = width + buffer;
         const yBuf = height + buffer;
@@ -121,23 +100,31 @@ export default class RhombusContainer {
         }
     }
 
-    static getLine(p: LineProps, props: SVGProps) {
+    private static getLine(p: LineProps, props: SVGProps) {
         return `<line x1="${p.x1}" y1="${p.y1}" x2="${p.x2}" y2="${p.y2}" 
             stroke="${props.fgColor}" stroke-width="${props.lineWidth}" />`;
     }
 
     static getBorderImage(partialProps: Partial<SVGProps> = {}): CSSProperties {
-        const props: SVGProps = Object.assign({}, RhombusContainer.svgDefaultProps, partialProps);
-        const {corners, width, height, fgColor, lineWidth, buffer, radiusDegrees} = props;
-        const allCorners = [RhombusCorner.TOP_LEFT, RhombusCorner.TOP_RIGHT, RhombusCorner.BOTTOM_LEFT, RhombusCorner.BOTTOM_RIGHT];
+        if (!RhombusContainer.addedDefaults) {
+            RhombusContainer.addDefaults();
+        }
 
-        const svgChildren = allCorners.map(corner => {
+        const props: SVGProps = Object.assign({}, RhombusContainer.svgDefaultProps, partialProps);
+        const {corners, width, height, fgColor, bgColor, lineWidth, buffer, radiusDegrees} = props;
+        const allCorners = [RhombusCorner.TOP_LEFT, RhombusCorner.TOP_RIGHT, RhombusCorner.BOTTOM_RIGHT, RhombusCorner.BOTTOM_LEFT];
+
+        const path: string[] = [];
+        allCorners.forEach((corner, i) => {
             const isCorner = corners.indexOf(corner) >= 0;
             const p = RhombusContainer.getLineProps(corner, props);
-            const lines = [];
+
+            if (i === 0) {
+                path.push(`M ${p.x1} ${p.y1}`);
+            }
 
             if (isCorner) {
-                lines.push(RhombusContainer.getLine(p, props));
+                path.push(`L ${p.x2} ${p.y2}`);
             } else {
                 /**
                  * M 0 0    Start XY
@@ -145,12 +132,10 @@ export default class RhombusContainer {
                  * 0 0 1    rotationDeg | isLarge | isSweep
                  * 50 50    End XY
                  */
-                lines.push(`<path d="M ${p.x1} ${p.y1} A ${radiusDegrees} ${radiusDegrees} 0 0 1 ${p.x2} ${p.y2}" 
-                    stroke="${fgColor}" fill="none" stroke-width="${lineWidth}" />`)
+                path.push(`A ${radiusDegrees} ${radiusDegrees} 0 0 1 ${p.x2} ${p.y2}`);
             }
-            lines.push(RhombusContainer.getLine(
-                RhombusContainer.getBufferProps(corner, props), props));
-            return lines.join("\n");
+            const buf = RhombusContainer.getBufferProps(corner, props);
+            path.push(`L ${buf.x2} ${buf.y2}`);
         });
 
         //Add in buffers
@@ -160,19 +145,19 @@ export default class RhombusContainer {
         const svg =
         `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" 
             width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
-            ${svgChildren.join('\n')}
+            <path d="${path.join('\n')}" stroke="${fgColor}" stroke-width="${lineWidth}" fill="${bgColor}" />
         </svg>`;
         const svgProperty = `url("${encodeSVG(svg)}")`;
 
         const borderStyle: CSSProperties = {
             borderImageSource: svgProperty,
-            borderImageSlice: `${height} ${width}`,
+            borderImageSlice: `${height} ${width} ${bgColor !== "none" ? "fill" : ""}`,
             borderImageWidth: `${height}px ${width}px`,
             borderImageOutset: "0px",
             borderImageRepeat: "stretch"
         };
 
-        const cssVar = RhombusContainer.getCSSVariable(svgProperty);
+        const cssVar = RhombusContainer.getCSSVariable(svgProperty, props.variableName);
         if (cssVar) {
             borderStyle.borderImageSource = `var(${cssVar})`;
         }

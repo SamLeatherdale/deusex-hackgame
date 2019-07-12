@@ -4,12 +4,13 @@ import LevelData from "../classes/LevelData";
 import RhombusContainer, {RhombusCorner} from "../classes/RhombusContainer";
 import LevelSelect from "./LevelSelect";
 import AllLevelData from "../classes/LevelDataLoader";
-import {condAttr, TypedObj} from "../shared";
+import {condAttr, DXBGDefault, DXBGLight, leftPad, TypedObj} from "../shared";
 import Player from "../classes/Player";
 import UpgradesView from "./UpgradesView";
 import _ from "lodash";
 import * as autoBind from "auto-bind";
 import Level, {LevelStatus} from "../classes/Level";
+import TraceStatusBox from "./TraceStatusBox";
 
 export enum AppView {
     LevelGrid,
@@ -19,7 +20,7 @@ export enum AppView {
 
 class AppState {
     currentView: AppView = AppView.LevelGrid;
-    level: Level = new Level(Object.values(AllLevelData)[2]);
+    level: Level = new Level(Object.values(AllLevelData)[0]);
     player: Player = new Player();
 }
 
@@ -125,46 +126,23 @@ export default class App extends React.Component<{}, AppState> {
                 {(currentView === AppView.LevelGrid && levelStatus !== LevelStatus.INCOMPLETE) &&
                 <div className="level-modal-bg">
                     <div className="level-modal">
-                        <div className="level-modal-body" style={RhombusContainer.getBorderImage()}>
-                            <div className="level-modal-title" style={RhombusContainer.getBorderImage()}>
+                        <div className="level-modal-body" style={RhombusContainer.getBorderImage({bgColor: DXBGDefault})}>
+                            <div className="dx-box dx-box-fill level-modal-title">
                                 {levelStatus === LevelStatus.COMPLETE ? "Access Granted" : "Connection Severed"}
                             </div>
                             <p>{levelStatus === LevelStatus.COMPLETE ? "Hacking attempt has succeeded." : "Hacking attempt has failed."}</p>
                         </div>
-                        <div style={RhombusContainer.getBorderImage()}
-                             className="dx-button"
+                        <div className="dx-button"
                              onClick={this.dismissLevelModal}>
                             OK
                         </div>
                     </div>
                 </div>}
                 <div className="app-view-buttons">
-                    <div className="app-status-bar">
-                        <div className="hack-device">
-                            <div>MHD-995 Hacking Device</div>
-                            <div className="dx-box" style={RhombusContainer.getBorderImage({
-                                corners: [RhombusCorner.BOTTOM_LEFT]
-                            })}>
-                                Scanning for trace...
-                            </div>
-                        </div>
-                        <div>
-                            <div className="dx-box player-item-bar" style={RhombusContainer.getBorderImage()}>
-                                {Array.from(player.items.values()).map(item => (
-                                    <div key={item.type}
-                                        className="player-item">
-                                        <i className={item.getIcon()} />
-                                        <span className="player-item-count">{item.count}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
                     {buttonData.map(button => (
                         <div
                             key={button.view}
                             className="dx-button"
-                            style={RhombusContainer.getBorderImage()}
                             onClick={() => this.changeView(button.view)}
                             data-active={condAttr(this.state.currentView === button.view)}
                         >
@@ -172,6 +150,31 @@ export default class App extends React.Component<{}, AppState> {
                         </div>
                     ))}
                 </div>
+                {currentView === AppView.LevelGrid &&
+                    <div className="app-status-bar">
+                        <div className="hack-device">
+                            <div>MHD-995 Hacking Device</div>
+                            <div className="dx-box" style={RhombusContainer.getBorderImage({
+                                corners: [RhombusCorner.BOTTOM_LEFT],
+                                bgColor: DXBGLight
+                            })}>
+                                Scanning for trace...
+                            </div>
+                        </div>
+                        <div className="app-status-bar-right">
+                            <TraceStatusBox />
+                            <div className="dx-box player-item-bar">
+                                {Array.from(player.items.values()).map(item => (
+                                    <div key={item.type}
+                                         className="player-item">
+                                        <i className={item.getIcon()}/>
+                                        <span className="player-item-count">{leftPad(item.count.toString(), 2, "0")}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                }
                 {view}
             </div>
         );
