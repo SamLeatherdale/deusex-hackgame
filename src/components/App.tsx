@@ -1,16 +1,17 @@
 import React from 'react';
 import LevelGrid from "./LevelGrid";
-import LevelData from "../classes/LevelData";
+import LevelData, {NodeType} from "../classes/LevelData";
 import RhombusContainer, {RhombusCorner} from "../classes/RhombusContainer";
 import LevelSelect from "./LevelSelect";
 import AllLevelData from "../classes/LevelDataLoader";
-import {condAttr, DXBGDefault, DXBGLight, leftPad, TypedObj} from "../shared";
+import {condAttr, DXBGDefault, DXBGLight, leftPad, NodeSelection, rollTheDice, TypedObj} from "../shared";
 import Player from "../classes/Player";
 import UpgradesView from "./UpgradesView";
 import _ from "lodash";
 import * as autoBind from "auto-bind";
 import Level, {LevelStatus} from "../classes/Level";
 import TraceStatusBox from "./TraceStatusBox";
+import LevelNode from "../classes/LevelNode";
 
 export enum AppView {
     LevelGrid,
@@ -22,6 +23,7 @@ class AppState {
     currentView: AppView = AppView.LevelGrid;
     level: Level = new Level(Object.values(AllLevelData)[2]);
     player: Player = new Player();
+    serverPlayer: Player;
 }
 
 interface AppViewButton {
@@ -49,10 +51,30 @@ export default class App extends React.Component<{}, AppState> {
         })
     }
 
+    updateNodes(nodes: NodeSelection, values: Partial<LevelNode>): void {
+        this.setState(prevState => {
+            let updateNodes;
+            if (nodes === true) {
+                updateNodes = Object.values(this.state.level.nodes);
+            } else if (nodes instanceof LevelNode) {
+                updateNodes = [nodes];
+            }
+
+            for (let node of updateNodes) {
+                node.updatePath(values);
+            }
+            this.updateLevel({});
+        })
+    }
+
     updateLevel(values: Partial<Level>): void {
         this.setState(prevState => {
             const level: Level = _.clone(prevState.level);
             level.updatePath(values);
+
+            if (values.isPlayerDetected) {
+                this.startEnemyCapturing();
+            }
 
             const newState: any = {};
             newState.level = level;
@@ -60,10 +82,12 @@ export default class App extends React.Component<{}, AppState> {
         })
     }
 
-    onSelectLevel(level: LevelData) {
+    onSelectLevel(levelData: LevelData) {
+        const level = new Level(levelData);
         this.setState({
             currentView: AppView.LevelGrid,
-            level: new Level(level)
+            level: level,
+            serverPlayer: Player.createFromLevel(level)
         });
     }
 
@@ -83,6 +107,42 @@ export default class App extends React.Component<{}, AppState> {
         this.setState({currentView: AppView.LevelSelect});
     }
 
+    startEnemyCapturing() {
+        const {level} = this.state;
+        const nodes = new Map<string, LevelNode>();
+        for (const node of level.getServerNodes()) {
+            nodes.set(node.key, node);
+        }
+
+        for (const node of nodes.values()) {
+            const canBeCaptured = !(node.type === NodeType.SERVER || node.captured);
+
+            if (canBeCaptured) {
+                this.captureServerNode(node);
+            } else {
+                //Add all connected nodes to list
+                for (const connNode of node.getConnectedNodes()) {
+                    nodes.set(connNode.key, connNode);
+                }
+            }
+        }
+    }
+
+    captureServerNode(node: LevelNode) {
+        this.updateNodes(node, {serverCapturing: true});
+
+        setTimeout(() => {
+            this.updateNodes(node, {
+                serverCaptured: true,
+                serverCapturing: false
+            });
+
+            if (node.type === NodeType.ENTRY) {
+                this.updateLevel({status: LevelStatus.FAILED});
+            }
+        }, node.getCaptureTime(this.state.serverPlayer))
+    }
+
     render() {
         const {currentView, player, level} = this.state;
         const levelStatus = this.state.level.status;
@@ -94,6 +154,7 @@ export default class App extends React.Component<{}, AppState> {
                             player={player}
                             level={level}
                             updateLevel={this.updateLevel}
+                            updateNodes={this.updateNodes}
                         />;
                 break;
             case AppView.LevelSelect:

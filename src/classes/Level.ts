@@ -1,4 +1,4 @@
-import LevelData, {LevelEdgeDirection, Point} from "./LevelData";
+import LevelData, {LevelEdgeDirection, NodeType, Point} from "./LevelData";
 import LevelNode from "./LevelNode";
 import NodeConnection from "./NodeConnection";
 import {TypedObj} from "../shared";
@@ -114,5 +114,9 @@ export default class Level {
     getColCount(): number {
         //return this.nodes.length;
         return this.gridColumns;
+    }
+
+    getServerNodes(): LevelNode[] {
+        return Object.values(this.nodes).filter(node => node.type === NodeType.SERVER);
     }
 }

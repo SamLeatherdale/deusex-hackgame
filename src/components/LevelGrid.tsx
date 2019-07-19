@@ -12,6 +12,7 @@ interface LevelGridProps {
     level: Level;
     player: Player;
     updateLevel: (values: Partial<Level>) => void;
+    updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void;
 }
 
 class LevelGridState {
@@ -29,24 +30,8 @@ export default class LevelGrid extends React.Component<LevelGridProps, LevelGrid
         autoBind.react(this);
     }
 
-    updateNodes(nodes: NodeSelection, values: Partial<LevelNode>): void {
-        this.setState(prevState => {
-            let updateNodes;
-            if (nodes === true) {
-                updateNodes = Object.values(this.props.level.nodes);
-            } else if (nodes instanceof LevelNode) {
-                updateNodes = [nodes];
-            }
-
-            for (let node of updateNodes) {
-                node.updatePath(values);
-            }
-            this.props.updateLevel({});
-        })
-    }
-
     onClickBg(e: React.MouseEvent<HTMLElement, MouseEvent>) {
-        this.updateNodes(true, {menuOpen: false});
+        this.props.updateNodes(true, {menuOpen: false});
     }
 
     render() {
@@ -65,7 +50,7 @@ export default class LevelGrid extends React.Component<LevelGridProps, LevelGrid
                                         key={node.key}
                                         node={node}
                                         player={this.props.player}
-                                        updateNodes={this.updateNodes}
+                                        updateNodes={this.props.updateNodes}
                                         updateLevel={this.props.updateLevel}
                             />
                         })}

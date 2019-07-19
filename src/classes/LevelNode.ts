@@ -13,6 +13,11 @@ export default class LevelNode extends NodeData {
     connections: NodeConnection[] = [];
 
     captured = false;
+    serverCaptured = false;
+
+    capturing = false;
+    serverCapturing = false;
+
     fortified = false;
     menuOpen = false;
 
@@ -45,6 +50,10 @@ export default class LevelNode extends NodeData {
         if (this.type === NodeType.ENTRY) {
             this.captured = true;
         }
+
+        if (this.type === NodeType.SERVER) {
+            this.serverCaptured = true;
+        }
     }
 
     updatePath(obj: TypedObj<any>): void {
@@ -71,29 +80,40 @@ export default class LevelNode extends NodeData {
     /*---------
      * Capture state accessors
      *---------*/
+    getConnectedNodes(): LevelNode[] {
+        const nodes = new Map<string, LevelNode>();
+        for (const conn of this.connections) {
+            const node = conn.getOtherNode(this);
+            nodes.set(node.key, node);
+        }
+        return Array.from(nodes.values());
+    }
 
+    getCaptured(server = false): boolean {
+        return server ? this.serverCaptured : this.captured;
+    }
 
-    addConnection(connection: NodeConnection) {
+    addConnection(connection: NodeConnection): void {
         this.connections.push(connection);
     }
 
-    isDisabled() {
-        return !(this.captured || this.isConnectedToCaptured());
+    isDisabled(server = false): boolean {
+        return !(this.getCaptured(server) || this.isConnectedToCaptured(server));
     }
 
-    canBeCaptured() {
-        return (this.isConnectedToCaptured() && !this.isDisabled());
+    canBeCaptured(server = false): boolean {
+        return (this.isConnectedToCaptured(server) && !this.isDisabled(server));
     }
 
-    canBeFortified() {
+    canBeFortified(): boolean {
         return this.captured && !this.fortified;
     }
 
-    isConnectedToCaptured() {
+    isConnectedToCaptured(server = false): boolean {
         for (const conn of this.connections) {
             if (conn.endsWith(this)) {
                 const node = conn.getOtherNode(this);
-                if (node.captured) {
+                if (node.getCaptured(server)) {
                     return true;
                 }
             }
@@ -101,8 +121,8 @@ export default class LevelNode extends NodeData {
         return false;
     }
 
-    appearsCaptured() {
-        return this.captured && this.type !== NodeType.ENTRY;
+    appearsCaptured(server = false): boolean {
+        return this.getCaptured(server) && this.type !== NodeType.ENTRY;
     }
 
     /**

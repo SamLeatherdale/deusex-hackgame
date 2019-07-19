@@ -16,7 +16,7 @@ interface NodeComponentProps {
 }
 
 class NodeComponentState {
-    capturing: boolean = false;
+    //capturing: boolean = false;
     fortifying: boolean = false;
 }
 
@@ -58,12 +58,16 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     captureNode() {
         const {node, updateNodes, updateLevel, player} = this.props;
         if (node.canBeCaptured()) {
-            updateNodes(node, {menuOpen: false});
-            this.setState({capturing: true});
+            updateNodes(node, {
+                menuOpen: false,
+                capturing: true
+            });
 
             setTimeout(() => {
-                updateNodes(node, {captured: true});
-                this.setState({capturing: false});
+                updateNodes(node, {
+                    captured: true,
+                    capturing: false
+                });
 
                 if (node.type === NodeType.EXIT) {
                     updateLevel({status: LevelStatus.COMPLETE});
@@ -96,8 +100,8 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
 
     render() {
         const {node, player} = this.props;
-        const {capturing, fortifying} = this.state;
-        const {x, y, menuOpen} = node;
+        const {fortifying} = this.state;
+        const {x, y, menuOpen, capturing} = node;
 
         const sprite = NodeTypeSprite.getSprite(node.type);
         const spriteUrl = `url("${sprite}")`;
