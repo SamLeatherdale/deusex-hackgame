@@ -1,8 +1,9 @@
 $app-container-padding: 20px;
 #app-container {
     @include dx-border;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
-    flex-grow: 1;
     position: relative;
 
     &[data-alert] {
@@ -43,6 +44,7 @@ $app-container-padding: 20px;
 .app-status-bar {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 
     .hack-device {
         color: white;

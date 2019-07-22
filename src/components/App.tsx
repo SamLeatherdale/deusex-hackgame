@@ -235,18 +235,6 @@ export default class App extends React.Component<{}, AppState> {
                         </div>
                     </div>
                 </div>}
-                <div className="app-view-buttons">
-                    {buttonData.map(button => (
-                        <div
-                            key={button.view}
-                            className="dx-button"
-                            onClick={() => this.changeView(button.view)}
-                            data-active={condAttr(this.state.currentView === button.view)}
-                        >
-                            {button.title}
-                        </div>
-                    ))}
-                </div>
                 {currentView === AppView.LevelGrid &&
                     <div className="app-status-bar">
                         <div className="hack-device">
@@ -257,6 +245,18 @@ export default class App extends React.Component<{}, AppState> {
                             })}>
                                 {level.isPlayerDetected ? "Trace Detected! Evade!" : "Scanning for trace..."}
                             </div>
+                        </div>
+                        <div className="app-view-buttons">
+                            {buttonData.map(button => (
+                                <div
+                                    key={button.view}
+                                    className="dx-button"
+                                    onClick={() => this.changeView(button.view)}
+                                    data-active={condAttr(this.state.currentView === button.view)}
+                                >
+                                    {button.title}
+                                </div>
+                            ))}
                         </div>
                         <div className="app-status-bar-right">
                             {level.isPlayerDetected &&
