@@ -56,6 +56,10 @@ export default class App extends React.Component<{}, AppState> {
         }
     }
 
+    isLevelGridView() {
+        return this.state.currentView === AppView.LevelGrid;
+    }
+
     updatePlayer(player: Player, values: TypedObj<any>): void {
         this.setState(prevState => {
             const player: Player = _.clone(prevState.player);
@@ -214,8 +218,9 @@ export default class App extends React.Component<{}, AppState> {
                 style={RhombusContainer.getBorderImage({
                     corners: [RhombusCorner.TOP_LEFT, RhombusCorner.BOTTOM_RIGHT]
                 })}
+                data-alert={condAttr(this.isLevelGridView() && !level.isComplete() && level.isPlayerDetected)}
             >
-                {(currentView === AppView.LevelGrid && levelStatus !== LevelStatus.INCOMPLETE) &&
+                {(this.isLevelGridView() && level.isComplete()) &&
                 <div className="level-modal-bg">
                     <div className="level-modal">
                         <div className="level-modal-body" style={RhombusContainer.getBorderImage({bgColor: DXBGDefault})}>

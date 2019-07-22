@@ -19,6 +19,8 @@ $capture-color: #00A1FF;
 $server-capture-color: #E03D3C;
 $fortify-color: $dx-bg-light;
 
+$zindex-level-alert: 1;
+$zindex-status-bar: 2;
 $zindex-node-mask-captured: 5;
 $zindex-node-mask: 6;
 $zindex-node-level-text: 8;
@@ -72,4 +74,18 @@ $animation-capture: capture;
     to {
         height: 100%;
     }
+}
+
+@mixin animation-opacity-fadein($to: 1, $from: 0) {
+    $name: animation-opacity-fadein-#{unique_id()};
+
+    @keyframes #{$name}  {
+        from {
+            opacity: $from;
+        }
+        to {
+            opacity: $to;
+        }
+    }
+    animation-name: $name;
 }

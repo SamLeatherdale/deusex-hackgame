@@ -142,6 +142,11 @@ export default class LevelNode extends NodeData {
         const captureSlowdownMult =
             (captureUpgrade.maxLevel - captureUpgrade.currentLevel) / captureUpgrade.maxLevel;
         let time = this.level * 1000 * (captureSlowdownMult);
+
+        if (!player.isUser) {
+            time *= 5;
+        }
+
         return time;
     }
 

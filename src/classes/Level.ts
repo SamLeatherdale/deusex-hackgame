@@ -87,6 +87,10 @@ export default class Level {
         this.lastUpdated = Date.now();
     }
 
+    isComplete(): boolean {
+        return this.status !== LevelStatus.INCOMPLETE;
+    }
+
     /**
      * @param x   The column, or x value.
      * @param y   The row, or y value.
