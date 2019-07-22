@@ -1,7 +1,7 @@
-import React, {CSSProperties} from "react";
+import React, {CSSProperties, ReactElement} from "react";
 import LevelNode from "../classes/LevelNode";
 import NodeTypeSprite from "../classes/NodeTypeSprite";
-import {condAttr, NodeSelection, rollTheDice} from "../shared";
+import {condAttr, NodeSelection, rollTheDice, TypedObj} from "../shared";
 import {NodeType} from "../classes/LevelData";
 import NodeMenu, {NodeMenuAction} from "./NodeMenu";
 import * as autoBind from "auto-bind";
@@ -99,33 +99,61 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         }
     }
 
-    render() {
+    static getMask(style: CSSProperties, attributes: TypedObj<any> = {}): ReactElement {
+        return (
+            <div key={JSON.stringify(attributes)}
+                 className="level-node-mask"
+                 style={style}
+                 {...attributes}
+            />
+        )
+    }
+
+    getMasks(spriteUrl: string): ReactElement[] {
         const {node, player, server} = this.props;
         const {fortifying} = this.state;
-        const {x, y, menuOpen, capturing, serverCapturing} = node;
+        const {capturing, serverCapturing} = node;
+
+        const masks: ReactElement[] = [];
+        let maskStyle: CSSProperties = {
+            mask: spriteUrl,
+            WebkitMaskImage: spriteUrl,
+        };
+
+        if (capturing) {
+            masks.push(NodeComponent.getMask(
+                {
+                    animationDuration: `${node.getCaptureTime(player)}ms`,
+                    ...maskStyle
+                }, {"data-capturing": 'user'}));
+        }
+        if (serverCapturing) {
+            masks.push(NodeComponent.getMask({
+                animationDuration: `${node.getCaptureTime(server)}ms`,
+                ...maskStyle
+            }, {"data-capturing": 'server'}));
+        }
+        if (fortifying) {
+            masks.push(NodeComponent.getMask({
+                animationDuration: `${node.getFortifyTime(player)}ms`,
+                ...maskStyle
+            }, {"data-fortifying": true}));
+        }
+        if (node.appearsCaptured()) {
+            masks.push(NodeComponent.getMask(maskStyle, {"data-captured": true}));
+        }
+        return masks;
+    }
+
+    render() {
+        const {node, player} = this.props;
+        const {x, y, menuOpen} = node;
 
         const sprite = NodeTypeSprite.getSprite(node.type);
         const spriteUrl = `url("${sprite}")`;
         const backgroundStyle: CSSProperties = {
             backgroundImage: spriteUrl,
         };
-        const showMaskAnimation = capturing || serverCapturing || fortifying;
-
-        let maskStyle: CSSProperties = {
-            mask: spriteUrl,
-            WebkitMaskImage: spriteUrl,
-        };
-        if (showMaskAnimation) {
-            let duration;
-            if (capturing) {
-                duration = node.getCaptureTime(player);
-            } else if (serverCapturing) {
-                duration = node.getCaptureTime(server);
-            } else if (fortifying) {
-                duration = node.getFortifyTime(player);
-            }
-            maskStyle.animationDuration = `${duration}ms`;
-        }
 
         return (
             <div className="level-node-grid"
@@ -141,11 +169,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                         <NodeMenu node={node}
                                   player={player}
                                   onNodeMenuAction={this.onNodeMenuAction} />}
-                    <div className="level-node-mask"
-                         data-capturing={condAttr(capturing || serverCapturing, capturing ? "user" : "server")}
-                         data-fortifying={condAttr(fortifying)}
-                         data-captured={condAttr(!showMaskAnimation && node.appearsCaptured())}
-                         style={maskStyle} />
+                    {this.getMasks(spriteUrl)}
                     <div className="level-node-img" style={backgroundStyle} />
                     <div className="level-node-level-text">{this.props.node.level}</div>
                 </div>

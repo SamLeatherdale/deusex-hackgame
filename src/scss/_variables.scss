@@ -19,8 +19,9 @@ $capture-color: #00A1FF;
 $server-capture-color: #E03D3C;
 $fortify-color: $dx-bg-light;
 
-$zindex-node-mask: 5;
-$zindex-node-level-text: 6;
+$zindex-node-mask-captured: 5;
+$zindex-node-mask: 6;
+$zindex-node-level-text: 8;
 $zindex-node-menu: 10;
 $zindex-node-menu-tooltip: 11;
 $zindex-level-modal-bg: 100;

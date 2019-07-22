@@ -88,6 +88,7 @@
             }
         }
         &[data-captured] {
+            z-index: $zindex-node-mask-captured;
             &:before {
                 height: 100%;
                 background-color: rgba($capture-color, $captured-opacity);
