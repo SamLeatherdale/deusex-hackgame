@@ -9,6 +9,7 @@ export default class Player {
     upgrades: Map<UpgradeType, Upgrade> = new Map();
     items: Map<ItemType, Item> = new Map();
     lastUpdated: number;
+    isUser: boolean = true;
 
     constructor() {
         for (const props of UpgradeDefaults.getDefaults()) {
@@ -31,6 +32,7 @@ export default class Player {
 
         const player = new Player();
         player.upgrades.get(UpgradeType.CAPTURE).currentLevel = difficulty;
+        player.isUser = false;
         return player;
     }
 

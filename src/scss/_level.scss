@@ -39,8 +39,8 @@
     }
 
     .level-node-mask {
-        $capture-color: rgb(0, 161, 255);
-        $fortify-color: $dx-bg-light;
+        $capturing-opacity: 0.2;
+        $captured-opacity: 0.5;
         mask-position: center;
         mask-repeat: no-repeat;
         position: absolute;
@@ -69,19 +69,28 @@
         &[data-capturing] {
             &:before {
                 animation-play-state: running;
-                background-color: rgba($capture-color, 0.2);
+            }
+        }
+        &[data-capturing='user'] {
+            &:before {
+                background-color: rgba($capture-color, $capturing-opacity);
+            }
+        }
+        &[data-capturing='server'] {
+            &:before {
+                background-color: rgba($server-capture-color, $capturing-opacity);
             }
         }
         &[data-fortifying] {
             &:before {
                 animation-play-state: running;
-                background-color: rgba($fortify-color, 0.2);
+                background-color: rgba($fortify-color, $capturing-opacity);
             }
         }
         &[data-captured] {
             &:before {
                 height: 100%;
-                background-color: rgba($capture-color, 0.5);
+                background-color: rgba($capture-color, $captured-opacity);
             }
         }
     }

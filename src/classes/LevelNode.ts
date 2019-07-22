@@ -21,6 +21,8 @@ export default class LevelNode extends NodeData {
     fortified = false;
     menuOpen = false;
 
+    static FORCE_CAPTURE_DETECTION = true;
+
     static getKey(x: number, y: number) {
         return `${x},${y}`;
     }
@@ -129,9 +131,18 @@ export default class LevelNode extends NodeData {
      * Gets the time to capture the node in ms.
      */
     getCaptureTime(player: Player): number {
+        /*    | N1   | N2   | N3   | N4   | N5   |
+         * P1 | 1000 | 2000 | 3000 | 4000 | 5000 |
+         * P2 | 750  | 1000 | 1000 | 1000 | 1000 |
+         * P3 | 500  | 1000 | 1000 | 1000 | 1000 |
+         * P4 | 1000 | 1000 | 1000 | 1000 | 1000 |
+         * P5 | 1000 | 1000 | 1000 | 1000 | 1000 |
+         */
         const captureUpgrade = player.upgrades.get(UpgradeType.CAPTURE);
-        const captureSlowdownMult = 1 / captureUpgrade.currentLevel;
-        return this.level * 1000 * (captureSlowdownMult);
+        const captureSlowdownMult =
+            (captureUpgrade.maxLevel - captureUpgrade.currentLevel) / captureUpgrade.maxLevel;
+        let time = this.level * 1000 * (captureSlowdownMult);
+        return time;
     }
 
     getFortifyTime(player: Player): number {
@@ -142,6 +153,10 @@ export default class LevelNode extends NodeData {
      * Gets the detection chance out of 100.
      */
     getDetectionChance(player: Player): number {
+        if (LevelNode.FORCE_CAPTURE_DETECTION) {
+            return 100;
+        }
+
         let chance = (this.level * 20) - (player.upgrades.get(UpgradeType.STEALTH).currentLevel * 15);
         if (chance < 15) {
             chance = 15;

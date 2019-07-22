@@ -11,6 +11,7 @@ import Player from "../classes/Player";
 interface LevelGridProps {
     level: Level;
     player: Player;
+    server: Player;
     updateLevel: (values: Partial<Level>) => void;
     updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void;
 }
@@ -50,6 +51,7 @@ export default class LevelGrid extends React.Component<LevelGridProps, LevelGrid
                                         key={node.key}
                                         node={node}
                                         player={this.props.player}
+                                        server={this.props.server}
                                         updateNodes={this.props.updateNodes}
                                         updateLevel={this.props.updateLevel}
                             />

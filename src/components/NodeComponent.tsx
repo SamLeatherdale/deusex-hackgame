@@ -11,6 +11,7 @@ import Level, {LevelStatus} from "../classes/Level";
 interface NodeComponentProps {
     node: LevelNode;
     player: Player;
+    server: Player;
     updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void;
     updateLevel: (values: Partial<Level>) => void;
 }
@@ -99,22 +100,30 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     render() {
-        const {node, player} = this.props;
+        const {node, player, server} = this.props;
         const {fortifying} = this.state;
-        const {x, y, menuOpen, capturing} = node;
+        const {x, y, menuOpen, capturing, serverCapturing} = node;
 
         const sprite = NodeTypeSprite.getSprite(node.type);
         const spriteUrl = `url("${sprite}")`;
         const backgroundStyle: CSSProperties = {
             backgroundImage: spriteUrl,
         };
+        const showMaskAnimation = capturing || serverCapturing || fortifying;
 
         let maskStyle: CSSProperties = {
             mask: spriteUrl,
             WebkitMaskImage: spriteUrl,
         };
-        if (capturing || fortifying) {
-            const duration = capturing ? node.getCaptureTime(player) : node.getFortifyTime(player);
+        if (showMaskAnimation) {
+            let duration;
+            if (capturing) {
+                duration = node.getCaptureTime(player);
+            } else if (serverCapturing) {
+                duration = node.getCaptureTime(server);
+            } else if (fortifying) {
+                duration = node.getFortifyTime(player);
+            }
             maskStyle.animationDuration = `${duration}ms`;
         }
 
@@ -133,9 +142,9 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                                   player={player}
                                   onNodeMenuAction={this.onNodeMenuAction} />}
                     <div className="level-node-mask"
-                         data-capturing={condAttr(capturing)}
+                         data-capturing={condAttr(capturing || serverCapturing, capturing ? "user" : "server")}
                          data-fortifying={condAttr(fortifying)}
-                         data-captured={condAttr(!(capturing || fortifying) && node.appearsCaptured())}
+                         data-captured={condAttr(!showMaskAnimation && node.appearsCaptured())}
                          style={maskStyle} />
                     <div className="level-node-img" style={backgroundStyle} />
                     <div className="level-node-level-text">{this.props.node.level}</div>

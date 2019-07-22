@@ -4,7 +4,8 @@ import * as autoBind from "auto-bind";
 
 interface TraceStatusBoxProps {
     time: number;
-    onTimeOut: () => void;
+    interval?: number;
+    onTimeOut?: () => void;
     paused?: boolean;
 }
 
@@ -15,6 +16,12 @@ interface TraceStatusBoxState {
 export default class TraceStatusBox extends React.Component<TraceStatusBoxProps, TraceStatusBoxState> {
     borderStyle: CSSProperties;
     tickHandle: number;
+
+    static defaultProps = {
+        interval: 10,
+        onTimeOut: () => '',
+        paused: false
+    };
 
     constructor(props: TraceStatusBoxProps) {
         super(props);
@@ -30,6 +37,13 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
         autoBind.react(this);
     }
 
+    unregisterInterval() {
+        if (typeof this.tickHandle !== "undefined") {
+            clearInterval(this.tickHandle);
+        }
+        this.tickHandle = undefined;
+    }
+
     /**
      * Updates the warning timer in 10ms increments.
      */
@@ -37,19 +51,30 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
         if (this.props.paused) {
             return;
         }
+
+        let done = false;
+
         this.setState((prevState) => {
-            let newTime = prevState.timeLeft - 0.01;
+            let newTime = prevState.timeLeft - this.props.interval / 1000;
             if (newTime <= 0) {
                 newTime = 0;
-                clearInterval(this.tickHandle);
-                this.props.onTimeOut();
+                done = true;
             }
             return {timeLeft: newTime};
+        }, () => {
+            if (done) {
+                this.unregisterInterval();
+                this.props.onTimeOut();
+            }
         });
     }
 
     componentDidMount(): void {
-        this.tickHandle = window.setInterval(this.tick, 10);
+        this.tickHandle = window.setInterval(this.tick, this.props.interval);
+    }
+
+    componentWillUnmount(): void {
+        this.unregisterInterval();
     }
 
     render() {
