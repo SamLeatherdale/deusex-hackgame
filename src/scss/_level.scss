@@ -49,6 +49,21 @@
         font-size: 18px;
     }
 
+    .level-node-server-captured {
+        position: absolute;
+        z-index: $zindex-node-level-text;
+        bottom: 0;
+        right: 0;
+        padding: 4px 6px;
+        border-radius: 4px;
+        color: white;
+        background-color: $server-capture-bg;
+
+        &:before {
+            content: '+';
+        }
+    }
+
     .level-node-mask {
         $capturing-opacity: 0.2;
         $captured-opacity: 0.5;

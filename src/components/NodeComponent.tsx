@@ -7,6 +7,7 @@ import NodeMenu, {NodeMenuAction} from "./NodeMenu";
 import * as autoBind from "auto-bind";
 import Player from "../classes/Player";
 import Level, {LevelStatus} from "../classes/Level";
+import {UpgradeType} from "../classes/Upgrade";
 
 interface NodeComponentProps {
     node: LevelNode;
@@ -146,7 +147,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     render() {
-        const {node, player} = this.props;
+        const {node, player, server} = this.props;
         const {x, y, menuOpen} = node;
 
         const sprite = NodeTypeSprite.getSprite(node.type);
@@ -171,7 +172,12 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                                   onNodeMenuAction={this.onNodeMenuAction} />}
                     {this.getMasks(spriteUrl)}
                     <div className="level-node-img" style={backgroundStyle} />
-                    <div className="level-node-level-text">{this.props.node.level}</div>
+                    <div className="level-node-level-text">{node.level}</div>
+                    {node.serverCaptured && node.type !== NodeType.SERVER &&
+                    <div className="level-node-server-captured">
+                        {server.upgrades.get(UpgradeType.CAPTURE).currentLevel}
+                    </div>
+                    }
                 </div>
             </div>
         );

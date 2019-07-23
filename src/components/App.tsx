@@ -205,6 +205,7 @@ export default class App extends React.Component<{}, AppState> {
             case AppView.LevelGrid:
                 view =
                 <PanZoom
+                    autoCenter={false}
                     disableDoubleClickZoom={true}
                     className="level-pan-container"
                     preventPan={App.preventPan}>
@@ -241,14 +242,18 @@ export default class App extends React.Component<{}, AppState> {
             }
         ];
 
+        const appBorderProps = {
+            corners: [RhombusCorner.TOP_LEFT, RhombusCorner.BOTTOM_RIGHT],
+            mask: true
+        };
+
         return (
             <div
                 id="app-container"
-                style={RhombusContainer.getBorderImage({
-                    corners: [RhombusCorner.TOP_LEFT, RhombusCorner.BOTTOM_RIGHT]
-                })}
-                data-alert={condAttr(this.isLevelGridView() && !level.isComplete() && level.isPlayerDetected)}
+                style={RhombusContainer.getBorderImage(appBorderProps)}
             >
+                {(this.isLevelGridView() && !level.isComplete() && level.isPlayerDetected) ||
+                <div className="level-alert" />}
                 {(this.isLevelGridView() && level.isComplete()) &&
                 <div className="level-modal-bg">
                     <div className="level-modal">

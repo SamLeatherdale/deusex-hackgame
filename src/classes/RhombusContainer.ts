@@ -12,6 +12,7 @@ interface SVGProps {
     lineWidth: number;
     buffer: number;
     radiusDegrees: number;
+    mask: boolean;
     variableName?: string;
 }
 
@@ -45,7 +46,8 @@ export default class RhombusContainer {
         bgColor: "none",
         lineWidth: 3,
         buffer: 20,
-        radiusDegrees: 20
+        radiusDegrees: 20,
+        mask: false
     };
 
     private static getCSSVariable(svg: string, name?: string): string {
@@ -105,13 +107,14 @@ export default class RhombusContainer {
             stroke="${props.fgColor}" stroke-width="${props.lineWidth}" />`;
     }
 
-    static getBorderImage(partialProps: Partial<SVGProps> = {}): CSSProperties {
+    public static getBorderImage(partialProps: Partial<SVGProps> = {}): CSSProperties {
         if (!RhombusContainer.addedDefaults) {
             RhombusContainer.addDefaults();
         }
 
         const props: SVGProps = Object.assign({}, RhombusContainer.svgDefaultProps, partialProps);
-        const {corners, width, height, fgColor, bgColor, lineWidth, buffer, radiusDegrees} = props;
+        const {corners, width, height, lineWidth, buffer, radiusDegrees} = props;
+        let {fgColor, bgColor} = props;
         const allCorners = [RhombusCorner.TOP_LEFT, RhombusCorner.TOP_RIGHT, RhombusCorner.BOTTOM_RIGHT, RhombusCorner.BOTTOM_LEFT];
 
         const path: string[] = [];
@@ -138,14 +141,19 @@ export default class RhombusContainer {
             path.push(`L ${buf.x2} ${buf.y2}`);
         });
 
-        //Add in buffers
+        let strokeOpacity = 1;
+        if (fgColor === "transparent") {
+            fgColor = "#000";
+            strokeOpacity = 0;
+        }
 
+        //Add in buffers
         const svgWidth = 2 * width + buffer;
         const svgHeight = 2 * height + buffer;
         const svg =
         `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" 
             width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
-            <path d="${path.join('\n')}" stroke="${fgColor}" stroke-width="${lineWidth}" fill="${bgColor}" />
+            <path d="${path.join('\n')}" stroke="${fgColor}" stroke-opacity="${strokeOpacity}" stroke-width="${lineWidth}" fill="${bgColor}" />
         </svg>`;
         const svgProperty = `url("${encodeSVG(svg)}")`;
 
@@ -156,6 +164,15 @@ export default class RhombusContainer {
             borderImageOutset: "0px",
             borderImageRepeat: "stretch"
         };
+
+        //Not currently supported, maybe in the future
+        if (props.mask) {
+            borderStyle.maskBorderSource = borderStyle.borderImageSource;
+            borderStyle.maskBorderSlice = borderStyle.borderImageSlice;
+            borderStyle.maskBorderWidth = borderStyle.borderImageWidth;
+            borderStyle.maskBorderOutset = borderStyle.borderImageOutset;
+            borderStyle.maskBorderRepeat = borderStyle.borderImageRepeat;
+        }
 
         const cssVar = RhombusContainer.getCSSVariable(svgProperty, props.variableName);
         if (cssVar) {

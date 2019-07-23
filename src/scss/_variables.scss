@@ -17,6 +17,7 @@ $dx-svg-border-button-hover: var(--dx-svg-border-button-hover);
 
 $capture-color: #00A1FF;
 $server-capture-color: #E03D3C;
+$server-capture-bg: #D32631;
 $fortify-color: $dx-bg-light;
 
 $zindex-level-alert: 1;
@@ -29,6 +30,10 @@ $zindex-node-menu-tooltip: 11;
 $zindex-level-modal-bg: 100;
 
 $ipad-port: 1023px;
+
+@function minus-padding($width, $padding) {
+    @return calc(#{$width} - (#{2 * $padding}));
+}
 
 @mixin media($width) {
     @media (max-width: $width) {
