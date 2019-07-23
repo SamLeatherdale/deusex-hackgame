@@ -267,7 +267,7 @@ export default class App extends React.Component<{}, AppState> {
                     <div className="app-status-bar"
                         data-floating={condAttr(this.isLevelGridView())}>
                         <div className="hack-device">
-                            <div>MHD-995 Hacking Device</div>
+                            <div className="hack-device-title">MHD-995 Hacking Device</div>
                             <div className="dx-box" style={RhombusContainer.getBorderImage({
                                 corners: [RhombusCorner.BOTTOM_LEFT],
                                 bgColor: DXBGLight

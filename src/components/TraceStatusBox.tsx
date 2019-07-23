@@ -80,10 +80,9 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
     render() {
         return (
             <div className="dx-box trace-status" style={this.borderStyle}>
-                <div>
+                <div className="trace-status-title-box">
                     <div className="trace-status-title">Tracing Alert</div>
                     <div className="trace-status-subtitle">Warning</div>
-
                 </div>
                 <div className="trace-status-timer">
                     {this.state.timeLeft.toFixed(2)}

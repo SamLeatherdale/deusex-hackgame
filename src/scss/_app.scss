@@ -1,4 +1,4 @@
-$app-container-padding: 0px;
+$app-container-padding: 10px;
 #app-container {
     @include dx-border;
     display: flex;
@@ -42,7 +42,7 @@ $app-container-padding: 0px;
     }
 }
 .app-status-bar {
-    padding: 20px;
+    padding: 20px - $app-container-padding;
 
     display: flex;
     justify-content: space-between;
@@ -59,22 +59,39 @@ $app-container-padding: 0px;
         z-index: $zindex-status-bar;
         width: calc(100% - #{2 * $app-container-padding});
         background-color: rgba(black, 0.5);
+
+        @include media($ipad-port) {
+        }
     }
 
     .hack-device {
         color: white;
         text-transform: uppercase;
 
+        .hack-device-title {
+            margin-bottom: 8px;
+
+            @include media($ipad-port) {
+                display: none;
+            }
+        }
+
         .dx-box {
-            margin-top: 8px;
             padding: 8px 15px;
         }
     }
     .app-status-bar-right {
         display: flex;
 
+        @include media($ipad-port) {
+            align-items: center;
+        }
+
         > div {
-            
+
+            @include media($ipad-port) {
+                width: 100%;
+            }
         }
     }
 
@@ -83,18 +100,34 @@ $app-container-padding: 0px;
         text-transform: uppercase;
         margin-right: 16px;
 
-        .trace-status-title {
-            color: white;
+        @include media($ipad-port) {
+            padding: 12px;
+            font-size: 14px;
         }
-        .trace-status-subtitle {
-            color: $dx-text-light;
-            text-align: right;
+
+        .trace-status-title-box {
+            margin-right: 8px;
+
+            @include media($ipad-port) {
+                display: none;
+            }
+
+            .trace-status-title {
+                color: white;
+            }
+            .trace-status-subtitle {
+                color: $dx-text-light;
+                text-align: right;
+            }
         }
         .trace-status-timer {
             font-size: 32px;
-            width: 70px;
+            width: 2em; //Must always have a set width to prevent bouncing
             text-align: right;
-            margin-left: 8px;
+
+            @include media($ipad-port) {
+                font-size: 24px;
+            }
         }
     }
 
@@ -102,14 +135,27 @@ $app-container-padding: 0px;
         display: flex;
 
         .player-item {
+            display: flex;
             font-size: 30px;
+
+            @include media($ipad-port) {
+                font-size: 20px;
+            }
 
             &:first-child {
                 margin-right: 32px;
+
+                @include media($ipad-port) {
+                    margin-right: 8px;
+                }
             }
 
             i {
                 margin-right: 12px;
+
+                @include media($ipad-port) {
+                    margin-right: 4px;
+                }
             }
         }
     }
