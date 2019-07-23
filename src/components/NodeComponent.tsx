@@ -8,13 +8,16 @@ import * as autoBind from "auto-bind";
 import Player from "../classes/Player";
 import Level, {LevelStatus} from "../classes/Level";
 import {UpgradeType} from "../classes/Upgrade";
+import {ItemType} from "../classes/Item";
 
 interface NodeComponentProps {
+    level: Level;
     node: LevelNode;
     player: Player;
     server: Player;
     updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void;
     updateLevel: (values: Partial<Level>) => void;
+    updatePlayer: (player: Player, values: TypedObj<any>) => void;
 }
 
 class NodeComponentState {
@@ -57,6 +60,21 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         }
     }
 
+    postCaptureNode(isNuke: boolean = false) {
+        const {node, updateLevel, player, level} = this.props;
+
+        //Check isComplete so we don't override fail state
+        if (level.isComplete()) {
+            return;
+        }
+
+        if (level.goalCaptured()) {
+            updateLevel({status: LevelStatus.COMPLETE});
+        } else if (!isNuke && rollTheDice(node.getDetectionChance(player))) {
+            updateLevel({isPlayerDetected: true});
+        }
+    }
+
     captureNode() {
         const {node, updateNodes, updateLevel, player} = this.props;
         if (node.canBeCaptured()) {
@@ -71,17 +89,23 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                     capturing: false
                 });
 
-                if (node.type === NodeType.EXIT) {
-                    updateLevel({status: LevelStatus.COMPLETE});
-                } else if (rollTheDice(node.getDetectionChance(player))) {
-                    updateLevel({isPlayerDetected: true});
-                }
+                this.postCaptureNode();
             }, node.getCaptureTime(this.props.player))
         }
     }
 
     nukeNode() {
+        const {node, updateNodes, updatePlayer, player} = this.props;
+        updateNodes(node, {
+            menuOpen: false,
+            capturing: false,
+            captured: true
+        });
 
+        player.items.get(ItemType.NUKE).useItem();
+        updatePlayer(player, {});
+
+        this.postCaptureNode(true);
     }
 
     stopNode() {

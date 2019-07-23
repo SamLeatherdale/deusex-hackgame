@@ -91,6 +91,19 @@ export default class Level {
         return this.status !== LevelStatus.INCOMPLETE;
     }
 
+    goalCaptured(): boolean {
+        const servers = this.getNodesByType(NodeType.SERVER);
+        const exits = this.getNodesByType(NodeType.EXIT);
+
+        for (const nodes of [servers, exits]) {
+            if (nodes.every(node => node.captured)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @param x   The column, or x value.
      * @param y   The row, or y value.
@@ -120,7 +133,7 @@ export default class Level {
         return this.gridColumns;
     }
 
-    getServerNodes(): LevelNode[] {
-        return Object.values(this.nodes).filter(node => node.type === NodeType.SERVER);
+    getNodesByType(type: NodeType): LevelNode[] {
+        return Object.values(this.nodes).filter(node => node.type === type);
     }
 }

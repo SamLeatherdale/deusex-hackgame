@@ -126,7 +126,7 @@ export default class App extends React.Component<{}, AppState> {
 
     startEnemyCapturing(): void {
         const {level} = this.state;
-        this.onCaptureServerNode(...level.getServerNodes());
+        this.onCaptureServerNode(...level.getNodesByType(NodeType.SERVER));
     }
 
     /**
@@ -166,6 +166,11 @@ export default class App extends React.Component<{}, AppState> {
                 serverCaptured: true,
                 serverCapturing: false
             });
+
+            //We don't want to override level being completed
+            if (this.state.level.isComplete()) {
+                return;
+            }
 
             if (node.type === NodeType.ENTRY) {
                 this.updateLevel({status: LevelStatus.FAILED});
@@ -215,6 +220,7 @@ export default class App extends React.Component<{}, AppState> {
                         server={server}
                         updateLevel={this.updateLevel}
                         updateNodes={this.updateNodes}
+                        updatePlayer={this.updatePlayer}
                     />
                 </PanZoom>;
                 break;
@@ -246,15 +252,16 @@ export default class App extends React.Component<{}, AppState> {
             corners: [RhombusCorner.TOP_LEFT, RhombusCorner.BOTTOM_RIGHT],
             mask: true
         };
+        const showAlert = this.isLevelGridView() && !level.isComplete() && level.isPlayerDetected;
+        const showModal = this.isLevelGridView() && level.isComplete();
 
         return (
             <div
                 id="app-container"
                 style={RhombusContainer.getBorderImage(appBorderProps)}
             >
-                {(this.isLevelGridView() && !level.isComplete() && level.isPlayerDetected) ||
-                <div className="level-alert" />}
-                {(this.isLevelGridView() && level.isComplete()) &&
+                {showAlert && <div className="level-alert" />}
+                {showModal &&
                 <div className="level-modal-bg">
                     <div className="level-modal">
                         <div className="level-modal-body" style={RhombusContainer.getBorderImage({bgColor: DXBGDefault})}>
@@ -296,6 +303,7 @@ export default class App extends React.Component<{}, AppState> {
                             {level.isPlayerDetected &&
                             <TraceStatusBox
                                 time={10}
+                                paused={level.isComplete()}
                                 //onTimeOut={this.onLevelFailed}
                             />
                             }

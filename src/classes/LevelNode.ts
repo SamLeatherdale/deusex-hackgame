@@ -4,6 +4,7 @@ import {TypedObj} from "../shared";
 import _ from "lodash";
 import Player from "./Player";
 import {UpgradeType} from "./Upgrade";
+import {ItemType} from "./Item";
 
 export default class LevelNode extends NodeData {
     lastUpdated: number;
@@ -109,6 +110,14 @@ export default class LevelNode extends NodeData {
 
     canBeFortified(): boolean {
         return this.captured && !this.fortified;
+    }
+
+    canBeNuked(player: Player): boolean {
+        return !this.captured && player.items.get(ItemType.NUKE).count > 0;
+    }
+
+    canBeStopped(player: Player): boolean {
+        return this.captured && player.items.get(ItemType.STOP).count > 0;
     }
 
     isConnectedToCaptured(server = false): boolean {

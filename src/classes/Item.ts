@@ -21,10 +21,16 @@ export default class Item {
         }
     }
 
+    useItem(): void {
+        if (this.count > 0) {
+            this.count--;
+        }
+    }
+
     static getDefaults(): Item[] {
         return [
-            new Item(ItemType.STOP),
-            new Item(ItemType.NUKE)
+            new Item(ItemType.STOP, 5),
+            new Item(ItemType.NUKE, 5)
         ];
     }
 }

@@ -3,6 +3,7 @@ import LevelNode from "../classes/LevelNode";
 import {condAttr} from "../shared";
 import * as autoBind from "auto-bind";
 import Player from "../classes/Player";
+import {ItemType} from "../classes/Item";
 
 export enum NodeMenuAction {
     CAPTURE,
@@ -57,7 +58,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
                 subtitle: `Detection: ${node.getDetectionChance(player)}%`,
                 placement: "top",
                 className: "fas fa-flag",
-                enabled: !node.captured,
+                enabled: node.canBeCaptured(),
                 action: NodeMenuAction.CAPTURE,
             },
             {
@@ -65,7 +66,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
                 subtitle: "Undetectable",
                 placement: "left",
                 className: "fas fa-radiation",
-                enabled: !node.captured,
+                enabled: node.canBeNuked(player),
                 action: NodeMenuAction.NUKE,
             },
             {
@@ -73,7 +74,7 @@ export default class NodeMenu extends React.Component<NodeMenuProps, NodeMenuSta
                 subtitle: "Undetectable",
                 placement: "right",
                 className: "fas fa-hand-paper",
-                enabled: node.captured,
+                enabled: node.canBeStopped(player),
                 action: NodeMenuAction.STOP,
             },
             {

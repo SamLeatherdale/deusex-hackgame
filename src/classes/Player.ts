@@ -4,6 +4,7 @@ import _ from "lodash";
 import UpgradeDefaults from "./UpgradeDefaults";
 import Item, {ItemType} from "./Item";
 import Level from "./Level";
+import {NodeType} from "./LevelData";
 
 export default class Player {
     upgrades: Map<UpgradeType, Upgrade> = new Map();
@@ -21,7 +22,7 @@ export default class Player {
     }
 
     static createFromLevel(level: Level): Player {
-        const servers = level.getServerNodes();
+        const servers = level.getNodesByType(NodeType.SERVER);
         const levels = servers.map(server => server.level);
         const uniqueLevels = [...new Set(levels)];
         let difficulty = uniqueLevels[0];
