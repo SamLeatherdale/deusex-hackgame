@@ -1,9 +1,9 @@
-$app-container-padding: 20px;
+$app-container-padding: 0px;
 #app-container {
     @include dx-border;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: $app-container-padding;
     position: relative;
 
     &[data-alert] {
@@ -42,9 +42,24 @@ $app-container-padding: 20px;
     }
 }
 .app-status-bar {
+    padding: 20px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    &:not([data-floating]) {
+        .hack-device, .app-status-bar-right {
+            visibility: hidden;
+        }
+    }
+
+    &[data-floating] {
+        position: absolute;
+        z-index: $zindex-status-bar;
+        width: calc(100% - #{2 * $app-container-padding});
+        background-color: rgba(black, 0.5);
+    }
 
     .hack-device {
         color: white;
