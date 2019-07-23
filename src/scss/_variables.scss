@@ -20,6 +20,9 @@ $server-capture-color: #E03D3C;
 $server-capture-bg: #D32631;
 $fortify-color: $dx-bg-light;
 
+$filter-black: brightness(0) saturate(100%);
+$filter-capture: invert(42%) sepia(36%) saturate(2904%) hue-rotate(179deg) brightness(104%) contrast(105%);
+
 $zindex-level-alert: 1;
 $zindex-status-bar: 2;
 $zindex-node-mask-captured: 5;

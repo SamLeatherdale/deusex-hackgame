@@ -225,13 +225,15 @@
 }
 .level-connector {
     $border-width: 2px;
+    $border-style: dashed;
+    $border-style-bidi: solid;
     position: absolute;
     width: 8px;
     border-width: 0;
     border-left-width: $border-width;
     border-right-width: $border-width;
     border-color: white;
-    border-style: dashed;
+    border-style: $border-style;
 
     //Align arrow at center
     display: flex;
@@ -239,11 +241,46 @@
     justify-content: center;
 
     &[data-bidi] {
-        border-style: solid;
+        border-style: $border-style-bidi;
     }
 
     &[data-disabled] {
         opacity: 0.3;
+    }
+
+    &[data-capturing] {
+        &:before {
+            content: '';
+            position: absolute;
+            align-self: flex-start;
+            justify-self: flex-start;
+            width: 100%;
+            height: 20px;
+
+            //border-width: 0;
+            //border-left-width: $border-width;
+            //border-right-width: $border-width;
+            //border-color: $capture-color;
+            //border-style: $border-style;
+
+            filter: $filter-black $filter-capture;
+
+            animation-name: $animation-capture;
+            animation-duration: 15s;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
+        }
+
+        &[data-bidi] {
+            &:before {
+                border-style: $border-style-bidi;
+            }
+        }
+        &[data-capturing='reverse'] {
+            &:before {
+                align-self: flex-end;
+            }
+        }
     }
 
     .level-connector-arrow {
@@ -255,3 +292,4 @@
         }
     }
 }
+

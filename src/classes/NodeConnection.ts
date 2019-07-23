@@ -32,6 +32,8 @@ export default class NodeConnection {
     to: LevelNode;
     bi: boolean;
 
+    capturing = false;
+
     constructor(from: LevelNode, to: LevelNode, bi: boolean) {
 
         this.from = from;

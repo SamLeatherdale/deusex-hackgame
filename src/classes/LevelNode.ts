@@ -22,7 +22,8 @@ export default class LevelNode extends NodeData {
     fortified = false;
     menuOpen = false;
 
-    static FORCE_CAPTURE_DETECTION = true;
+    static FORCE_CAPTURE_DETECTION = false;
+    static FORCE_NO_CAPTURE_DETECTION = true;
 
     static getKey(x: number, y: number) {
         return `${x},${y}`;
@@ -90,6 +91,12 @@ export default class LevelNode extends NodeData {
             nodes.set(node.key, node);
         }
         return Array.from(nodes.values());
+    }
+
+    getActiveConnectionsToNode(): NodeConnection[] {
+        return this.connections.filter(conn => {
+            return !conn.isConnectedToDisabled() && conn.endsWith(this);
+        });
     }
 
     getCaptured(server = false): boolean {
@@ -169,6 +176,9 @@ export default class LevelNode extends NodeData {
     getDetectionChance(player: Player): number {
         if (LevelNode.FORCE_CAPTURE_DETECTION) {
             return 100;
+        }
+        if (LevelNode.FORCE_NO_CAPTURE_DETECTION) {
+            return 0;
         }
 
         let chance = (this.level * 20) - (player.upgrades.get(UpgradeType.STEALTH).currentLevel * 15);

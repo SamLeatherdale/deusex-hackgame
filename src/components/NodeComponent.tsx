@@ -77,12 +77,23 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
 
     captureNode() {
         const {node, updateNodes, updateLevel, player} = this.props;
-        if (node.canBeCaptured()) {
+
+        //Find connection(s) to this node
+        const conns = node.getActiveConnectionsToNode();
+        conns.forEach(conn => conn.capturing = true);
+
+        updateNodes(node, {
+            menuOpen: false
+        });
+
+        //Wait for connection animation to complete
+        setTimeout(() => {
+            //conns.forEach(conn => conn.capturing = false);
             updateNodes(node, {
-                menuOpen: false,
                 capturing: true
             });
 
+            //Wait for capturing animation to complete
             setTimeout(() => {
                 updateNodes(node, {
                     captured: true,
@@ -91,7 +102,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
 
                 this.postCaptureNode();
             }, node.getCaptureTime(this.props.player))
-        }
+        }, 200);
     }
 
     nukeNode() {
