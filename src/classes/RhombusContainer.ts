@@ -38,7 +38,7 @@ export default class RhombusContainer {
     private static cached: Map<string, string> = new Map();
     private static cachedIdx: number = 1;
 
-    private static svgDefaultProps: SVGProps = {
+    private static readonly svgDefaultProps: SVGProps = {
         corners: [RhombusCorner.BOTTOM_LEFT, RhombusCorner.TOP_RIGHT],
         width: 20,
         height: 20,

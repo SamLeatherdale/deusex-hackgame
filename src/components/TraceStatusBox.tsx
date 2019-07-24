@@ -17,7 +17,7 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
     borderStyle: CSSProperties;
     tickHandle: number;
 
-    static defaultProps = {
+    static readonly defaultProps = {
         interval: 10,
         onTimeOut: () => '',
         paused: false

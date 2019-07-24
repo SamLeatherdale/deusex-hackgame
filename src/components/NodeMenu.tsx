@@ -3,7 +3,6 @@ import LevelNode from "../classes/LevelNode";
 import {condAttr} from "../shared";
 import * as autoBind from "auto-bind";
 import Player from "../classes/Player";
-import {ItemType} from "../classes/Item";
 
 export enum NodeMenuAction {
     CAPTURE,

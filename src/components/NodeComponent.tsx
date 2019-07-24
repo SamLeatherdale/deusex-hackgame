@@ -1,7 +1,7 @@
 import React, {CSSProperties, ReactElement} from "react";
 import LevelNode from "../classes/LevelNode";
 import NodeTypeSprite from "../classes/NodeTypeSprite";
-import {condAttr, NodeSelection, rollTheDice, TypedObj} from "../shared";
+import {CaptureStatus, condAttr, NodeSelection, rollTheDice, TypedObj} from "../shared";
 import {NodeType} from "../classes/LevelData";
 import NodeMenu, {NodeMenuAction} from "./NodeMenu";
 import * as autoBind from "auto-bind";
@@ -9,6 +9,8 @@ import Player from "../classes/Player";
 import Level, {LevelStatus} from "../classes/Level";
 import {UpgradeType} from "../classes/Upgrade";
 import {ItemType} from "../classes/Item";
+import ConnectionComponent from "./ConnectionComponent";
+import {delay} from "q";
 
 interface NodeComponentProps {
     level: Level;
@@ -76,41 +78,43 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     captureNode() {
-        const {node, updateNodes, updateLevel, player} = this.props;
+        const {node, updateNodes} = this.props;
 
         //Find connection(s) to this node
         const conns = node.getActiveConnectionsToNode();
-        conns.forEach(conn => conn.capturing = true);
+        conns.forEach(conn => conn.captured = CaptureStatus.CAPTURING);
 
         updateNodes(node, {
             menuOpen: false
         });
 
         //Wait for connection animation to complete
-        setTimeout(() => {
-            //conns.forEach(conn => conn.capturing = false);
+        delay(ConnectionComponent.CAPTURE_TIME)
+        .then(() => {
+            conns.forEach(conn => conn.captured = CaptureStatus.CAPTURED);
+
             updateNodes(node, {
-                capturing: true
+                captured: CaptureStatus.CAPTURING
             });
 
-            //Wait for capturing animation to complete
-            setTimeout(() => {
-                updateNodes(node, {
-                    captured: true,
-                    capturing: false
-                });
 
-                this.postCaptureNode();
-            }, node.getCaptureTime(this.props.player))
-        }, 200);
+            //Wait for node capturing animation to complete
+            return delay(node.getCaptureTime(this.props.player));
+        }).then(() => {
+            updateNodes(node, {
+                captured: CaptureStatus.CAPTURED,
+            });
+
+            this.postCaptureNode();
+        });
+
     }
 
     nukeNode() {
         const {node, updateNodes, updatePlayer, player} = this.props;
         updateNodes(node, {
             menuOpen: false,
-            capturing: false,
-            captured: true
+            captured: CaptureStatus.CAPTURED
         });
 
         player.items.get(ItemType.NUKE).useItem();
@@ -148,7 +152,6 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     getMasks(spriteUrl: string): ReactElement[] {
         const {node, player, server} = this.props;
         const {fortifying} = this.state;
-        const {capturing, serverCapturing} = node;
 
         const masks: ReactElement[] = [];
         let maskStyle: CSSProperties = {
@@ -156,14 +159,14 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
             WebkitMaskImage: spriteUrl,
         };
 
-        if (capturing) {
+        if (node.isCapturing()) {
             masks.push(NodeComponent.getMask(
                 {
                     animationDuration: `${node.getCaptureTime(player)}ms`,
                     ...maskStyle
                 }, {"data-capturing": 'user'}));
         }
-        if (serverCapturing) {
+        if (node.isCapturing(true)) {
             masks.push(NodeComponent.getMask({
                 animationDuration: `${node.getCaptureTime(server)}ms`,
                 ...maskStyle
@@ -208,7 +211,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                     {this.getMasks(spriteUrl)}
                     <div className="level-node-img" style={backgroundStyle} />
                     <div className="level-node-level-text">{node.level}</div>
-                    {node.serverCaptured && node.type !== NodeType.SERVER &&
+                    {node.isCaptured(true) && node.type !== NodeType.SERVER &&
                     <div className="level-node-server-captured">
                         {server.upgrades.get(UpgradeType.CAPTURE).currentLevel}
                     </div>

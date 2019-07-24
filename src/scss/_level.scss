@@ -223,72 +223,124 @@
     top: 0;
     left: 0;
 }
+
 .level-connector {
     $border-width: 2px;
     $border-style: dashed;
     $border-style-bidi: solid;
     position: absolute;
     width: 8px;
-    border-width: 0;
-    border-left-width: $border-width;
-    border-right-width: $border-width;
-    border-color: white;
-    border-style: $border-style;
+    //border-width: 0;
+    //border-left-width: $border-width;
+    //border-right-width: $border-width;
+    //border-color: white;
+    //border-style: $border-style;
 
     //Align arrow at center
     display: flex;
     align-items: center;
-    justify-content: center;
-
-    &[data-bidi] {
-        border-style: $border-style-bidi;
-    }
+    justify-content: space-between;
 
     &[data-disabled] {
         opacity: 0.3;
     }
 
-    &[data-capturing] {
-        &:before {
-            content: '';
-            position: absolute;
-            align-self: flex-start;
-            justify-self: flex-start;
-            width: 100%;
-            height: 20px;
+    $line-width: 2.5px; //Avoid subpixel rendering issues
 
-            //border-width: 0;
-            //border-left-width: $border-width;
-            //border-right-width: $border-width;
-            //border-color: $capture-color;
-            //border-style: $border-style;
+    @mixin line-image($color, $size: 70%) {
+        background-image: linear-gradient(
+                to bottom,
+                $color,
+                $color $size,
+                rgba(white, 0) $size + 1%);
+        background-position: top;
+        background-size: $line-width 8px;
+        background-repeat: repeat-y;
+    }
 
-            filter: $filter-black $filter-capture;
+    .level-connector-line {
+        width: $line-width;
+        height: 100%;
+        display: flex;
+        position: relative;
 
-            animation-name: $animation-capture;
-            animation-duration: 15s;
-            animation-timing-function: linear;
-            animation-iteration-count: 1;
-        }
+        @include line-image(white);
 
-        &[data-bidi] {
+        &[data-capture] {
             &:before {
-                border-style: $border-style-bidi;
+                content: '';
+                position: absolute;
+                align-self: flex-start;
+                width: 100%;
+            }
+
+            &[data-line='user'] {
+                &:before {
+                    @include line-image($capture-color);
+                }
+            }
+            &[data-line='server'] {
+                &:before {
+                    @include line-image($server-capture-color);
+                }
+            }
+
+            &[data-reverse] {
+                &:before {
+                    align-self: flex-end;
+                }
             }
         }
-        &[data-capturing='reverse'] {
+
+        &[data-capture='capturing'] {
             &:before {
-                align-self: flex-end;
+                height: 0;
+                animation-name: $animation-capture;
+                animation-timing-function: linear;
+                animation-iteration-count: 1;
+                animation-duration: inherit; //Set on parent
+            }
+        }
+
+        &[data-capture='captured'] {
+            &:before {
+                height: 100%;
             }
         }
     }
 
-    .level-connector-arrow {
-        &:after {
-            display: block;
-            content: '⮝';
-            font-size: 30px;
-            color: white;
+    &[data-bidi] {
+        .level-connector-line {
+            background: white;
+
+            &[data-capture] {
+                &[data-line='user'] {
+                    &:before {
+                        background: $capture-color;
+                    }
+                }
+                &[data-line='server'] {
+                    &:before {
+                        background: $server-capture-color;
+                    }
+                }
+            }
+        }
+    }
+
+    .level-connector-center {
+        width: 1px;
+        overflow: visible;
+        display: flex;
+        justify-content: center;
+
+        .level-connector-arrow {
+            &:after {
+                display: block;
+                content: '⮝';
+                font-size: 30px;
+                color: white;
+            }
         }
     }
 }

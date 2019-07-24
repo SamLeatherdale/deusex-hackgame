@@ -1,7 +1,7 @@
 import LevelData, {LevelEdgeDirection, NodeType, Point} from "./LevelData";
 import LevelNode from "./LevelNode";
 import NodeConnection from "./NodeConnection";
-import {TypedObj} from "../shared";
+import {CaptureStatus, TypedObj} from "../shared";
 import _ from "lodash";
 
 export enum LevelStatus {
@@ -96,7 +96,7 @@ export default class Level {
         const exits = this.getNodesByType(NodeType.EXIT);
 
         for (const nodes of [servers, exits]) {
-            if (nodes.every(node => node.captured)) {
+            if (nodes.every(node => node.isCaptured())) {
                 return true;
             }
         }

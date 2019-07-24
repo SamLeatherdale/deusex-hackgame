@@ -1,6 +1,6 @@
 import {NodeData, NodeType} from "./LevelData";
 import NodeConnection from "./NodeConnection";
-import {TypedObj} from "../shared";
+import {CaptureStatus, TypedObj} from "../shared";
 import _ from "lodash";
 import Player from "./Player";
 import {UpgradeType} from "./Upgrade";
@@ -13,17 +13,14 @@ export default class LevelNode extends NodeData {
     key: string;
     connections: NodeConnection[] = [];
 
-    captured = false;
-    serverCaptured = false;
-
-    capturing = false;
-    serverCapturing = false;
+    captured = CaptureStatus.NONE;
+    serverCaptured = CaptureStatus.NONE;
 
     fortified = false;
     menuOpen = false;
 
-    static FORCE_CAPTURE_DETECTION = false;
-    static FORCE_NO_CAPTURE_DETECTION = true;
+    private static readonly FORCE_CAPTURE_DETECTION = true;
+    private static readonly FORCE_NO_CAPTURE_DETECTION = false;
 
     static getKey(x: number, y: number) {
         return `${x},${y}`;
@@ -52,11 +49,11 @@ export default class LevelNode extends NodeData {
 
         //Automatically enable entry nodes
         if (this.type === NodeType.ENTRY) {
-            this.captured = true;
+            this.captured = CaptureStatus.CAPTURED;
         }
 
         if (this.type === NodeType.SERVER) {
-            this.serverCaptured = true;
+            this.serverCaptured = CaptureStatus.CAPTURED;
         }
     }
 
@@ -93,14 +90,22 @@ export default class LevelNode extends NodeData {
         return Array.from(nodes.values());
     }
 
-    getActiveConnectionsToNode(): NodeConnection[] {
+    /**
+     * Gets the node connections that have at least one captured end.
+     */
+    getActiveConnectionsToNode(server = false): NodeConnection[] {
         return this.connections.filter(conn => {
-            return !conn.isConnectedToDisabled() && conn.endsWith(this);
+            const start = conn.getOtherNode(this);
+            return start.isCaptured(server) && conn.endsWith(this);
         });
     }
 
-    getCaptured(server = false): boolean {
-        return server ? this.serverCaptured : this.captured;
+    isCaptured(server = false): boolean {
+        return server ? this.serverCaptured === CaptureStatus.CAPTURED : this.captured === CaptureStatus.CAPTURED;
+    }
+
+    isCapturing(server = false): boolean {
+        return server ? this.serverCaptured === CaptureStatus.CAPTURING : this.captured === CaptureStatus.CAPTURING;
     }
 
     addConnection(connection: NodeConnection): void {
@@ -108,7 +113,7 @@ export default class LevelNode extends NodeData {
     }
 
     isDisabled(server = false): boolean {
-        return !(this.getCaptured(server) || this.isConnectedToCaptured(server));
+        return !(this.isCaptured(server) || this.isConnectedToCaptured(server));
     }
 
     canBeCaptured(server = false): boolean {
@@ -131,7 +136,7 @@ export default class LevelNode extends NodeData {
         for (const conn of this.connections) {
             if (conn.endsWith(this)) {
                 const node = conn.getOtherNode(this);
-                if (node.getCaptured(server)) {
+                if (node.isCaptured(server)) {
                     return true;
                 }
             }
@@ -140,7 +145,7 @@ export default class LevelNode extends NodeData {
     }
 
     appearsCaptured(server = false): boolean {
-        return this.getCaptured(server) && this.type !== NodeType.ENTRY;
+        return this.isCaptured(server) && this.type !== NodeType.ENTRY;
     }
 
     /**

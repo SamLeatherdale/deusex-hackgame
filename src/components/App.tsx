@@ -8,12 +8,14 @@ import LevelData, {NodeType} from "../classes/LevelData";
 import RhombusContainer, {RhombusCorner} from "../classes/RhombusContainer";
 import LevelSelect from "./LevelSelect";
 import AllLevelData from "../classes/LevelDataLoader";
-import {condAttr, DXBGDefault, DXBGLight, leftPad, NodeSelection, TypedObj} from "../shared";
+import {CaptureStatus, condAttr, DXBGDefault, DXBGLight, leftPad, NodeSelection, TypedObj} from "../shared";
 import Player from "../classes/Player";
 import UpgradesView from "./UpgradesView";
 import Level, {LevelStatus} from "../classes/Level";
 import TraceStatusBox from "./TraceStatusBox";
 import LevelNode from "../classes/LevelNode";
+import ConnectionComponent from "./ConnectionComponent";
+import {delay} from "q";
 
 export enum AppView {
     LevelGrid = "grid",
@@ -34,7 +36,7 @@ interface AppViewButton {
 }
 
 export default class App extends React.Component<{}, AppState> {
-    static defaultLevel = 2;
+    static readonly defaultLevel = 2;
 
     constructor(props) {
         super(props);
@@ -145,7 +147,7 @@ export default class App extends React.Component<{}, AppState> {
         }
 
         for (const node of nodes.values()) {
-            const canBeCaptured = !(node.type === NodeType.SERVER || node.serverCaptured);
+            const canBeCaptured = !(node.type === NodeType.SERVER || node.isCaptured(true));
 
             if (canBeCaptured) {
                 this.captureServerNode(node);
@@ -159,12 +161,23 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     captureServerNode(node: LevelNode): void {
-        this.updateNodes(node, {serverCapturing: true});
+        //Find connection(s) to this node
+        const conns = node.getActiveConnectionsToNode(true);
+        conns.forEach(conn => conn.serverCaptured = CaptureStatus.CAPTURING);
+        this.setState({});
 
-        setTimeout(() => {
+        //Wait for connection animation to complete
+        delay(ConnectionComponent.CAPTURE_TIME)
+        .then(() => {
+            conns.forEach(conn => conn.serverCaptured = CaptureStatus.CAPTURED);
+
+            this.updateNodes(node, {serverCaptured: CaptureStatus.CAPTURING});
+
+            //Wait for node capturing animation to complete
+            return delay(node.getCaptureTime(this.state.server));
+        }).then(() => {
             this.updateNodes(node, {
-                serverCaptured: true,
-                serverCapturing: false
+                serverCaptured: CaptureStatus.CAPTURED
             });
 
             //We don't want to override level being completed
@@ -177,7 +190,7 @@ export default class App extends React.Component<{}, AppState> {
             } else {
                 this.onCaptureServerNode(node);
             }
-        }, node.getCaptureTime(this.state.server))
+        });
     }
 
     /**

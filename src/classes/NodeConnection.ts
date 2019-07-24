@@ -1,7 +1,7 @@
 import LevelNode from "./LevelNode";
 import {CSSProperties} from "react";
 import {PointObj} from "./LevelData";
-import {genericCompare} from "../shared";
+import {CaptureStatus, genericCompare} from "../shared";
 
 
 
@@ -32,10 +32,10 @@ export default class NodeConnection {
     to: LevelNode;
     bi: boolean;
 
-    capturing = false;
+    captured = CaptureStatus.NONE;
+    serverCaptured = CaptureStatus.NONE;
 
     constructor(from: LevelNode, to: LevelNode, bi: boolean) {
-
         this.from = from;
         this.to = to;
         this.bi = bi;

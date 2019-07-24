@@ -11,6 +11,12 @@ export type TypedObj<T> = {
 
 export type NodeSelection = LevelNode | LevelNode[] | boolean;
 
+export enum CaptureStatus {
+    NONE = '',
+    CAPTURING = 'capturing',
+    CAPTURED = 'captured'
+}
+
 export function genericCompare(val1: any, val2: any): number {
     if (val1 < val2) {
         return -1;
