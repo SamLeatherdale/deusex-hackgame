@@ -18,6 +18,7 @@ import ConnectionComponent from "./ConnectionComponent";
 import {delay} from "q";
 import {UpgradeType} from "../classes/Upgrade";
 import {DEBUG_MODE} from "../index";
+import DelayableTimer from "../classes/DelayableTimer";
 
 export enum AppView {
     LevelGrid = "grid",
@@ -38,8 +39,12 @@ interface AppViewButton {
 }
 
 export default class App extends React.Component<{}, AppState> {
-    private static readonly defaultLevel = 2;
+    public static readonly TIMER_SERVER_CAPTURE_KEY = 'server-capture';
+    public static readonly STOP_WORM_DURATION = 5000;
+    private static readonly DEFAULT_LEVEL = 2;
+
     private readonly DISABLE_LEVEL_FAILURE = DEBUG_MODE && true;
+
 
     constructor(props) {
         super(props);
@@ -49,7 +54,7 @@ export default class App extends React.Component<{}, AppState> {
         if (this.state.currentView === AppView.LevelGrid) {
             //We must initialize properly
             Object.assign(this.state,
-                App.getLevelState(Object.values(AllLevelData)[App.defaultLevel]));
+                App.getLevelState(Object.values(AllLevelData)[App.DEFAULT_LEVEL]));
 
         }
     }
@@ -170,15 +175,17 @@ export default class App extends React.Component<{}, AppState> {
         this.setState({});
 
         //Wait for connection animation to complete
-        delay(ConnectionComponent.CAPTURE_TIME)
+        new DelayableTimer(ConnectionComponent.CAPTURE_TIME).promise
         .then(() => {
             conns.forEach(conn => conn.serverCaptured = CaptureStatus.CAPTURED);
 
             this.updateNodes(node, {serverCaptured: CaptureStatus.CAPTURING});
-
+        })
+        .then(() => {
             //Wait for node capturing animation to complete
-            return delay(node.getCaptureTime(this.state.server));
-        }).then(() => {
+            return new DelayableTimer(node.getCaptureTime(this.state.server), App.TIMER_SERVER_CAPTURE_KEY).promise;
+        })
+        .then(() => {
             this.updateNodes(node, {
                 serverCaptured: CaptureStatus.CAPTURED,
                 serverCapturedLevel: server.upgrades.get(UpgradeType.CAPTURE).currentLevel
@@ -323,7 +330,7 @@ export default class App extends React.Component<{}, AppState> {
                             {level.isPlayerDetected &&
                             <TraceStatusBox
                                 time={10}
-                                paused={level.isComplete()}
+                                paused={level.isComplete() || level.stopWormActive}
                                 //onTimeOut={this.onLevelFailed}
                             />
                             }

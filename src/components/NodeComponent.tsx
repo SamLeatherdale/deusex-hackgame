@@ -1,7 +1,7 @@
 import React, {CSSProperties, ReactElement} from "react";
 import LevelNode from "../classes/LevelNode";
 import NodeTypeSprite from "../classes/NodeTypeSprite";
-import {CaptureStatus, condAttr, NodeSelection, rollTheDice, TypedObj} from "../shared";
+import {CaptureStatus, condAttr, condAttrObject, NodeSelection, rollTheDice, TypedObj} from "../shared";
 import {NodeType} from "../classes/LevelData";
 import NodeMenu, {NodeMenuAction} from "./NodeMenu";
 import * as autoBind from "auto-bind";
@@ -11,6 +11,8 @@ import {UpgradeType} from "../classes/Upgrade";
 import {ItemType} from "../classes/Item";
 import ConnectionComponent from "./ConnectionComponent";
 import {delay} from "q";
+import DelayableTimer from "../classes/DelayableTimer";
+import App from "./App";
 
 interface NodeComponentProps {
     level: Level;
@@ -28,6 +30,8 @@ class NodeComponentState {
 }
 
 export default class NodeComponent extends React.Component<NodeComponentProps, NodeComponentState> {
+    static readonly TIMER_LEVEL_STOP_KEY = 'node-level-stop';
+
     constructor(props: NodeComponentProps) {
         super(props);
         this.state = new NodeComponentState();
@@ -124,7 +128,24 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     stopNode() {
+        const {node, updateLevel, updateNodes, updatePlayer, player} = this.props;
+        updateNodes(node, {
+            menuOpen: false
+        });
 
+        player.items.get(ItemType.STOP).useItem();
+        updatePlayer(player, {});
+
+        //Delay all server captures
+        DelayableTimer.rescheduleTimers(App.TIMER_SERVER_CAPTURE_KEY, App.STOP_WORM_DURATION);
+
+        updateLevel({stopWormActive: true});
+
+        DelayableTimer.cancelTimers(NodeComponent.TIMER_LEVEL_STOP_KEY);
+        new DelayableTimer(App.STOP_WORM_DURATION, NodeComponent.TIMER_LEVEL_STOP_KEY).promise
+            .then(() => {
+                updateLevel({stopWormActive: false});
+            });
     }
 
     fortifyNode() {
@@ -149,13 +170,13 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
             <div key={JSON.stringify(attributes)}
                  className="level-node-mask"
                  style={style}
-                 {...attributes}
+                 {...condAttrObject(attributes)}
             />
         )
     }
 
     getMasks(spriteUrl: string): ReactElement[] {
-        const {node, player, server} = this.props;
+        const {node, player, server, level} = this.props;
         const {fortifying} = this.state;
 
         const masks: ReactElement[] = [];
@@ -175,7 +196,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
             masks.push(NodeComponent.getMask({
                 animationDuration: `${node.getCaptureTime(server)}ms`,
                 ...maskStyle
-            }, {"data-capturing": 'server'}));
+            }, {"data-capturing": 'server', 'data-paused': level.stopWormActive}));
         }
         if (fortifying) {
             masks.push(NodeComponent.getMask({

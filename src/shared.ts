@@ -1,4 +1,5 @@
 import LevelNode from "./classes/LevelNode";
+import _ from "lodash";
 
 export const DXBorderColor = "#eca723";
 export const DXBGLight = "#c58d22";
@@ -26,6 +27,10 @@ export function genericCompare(val1: any, val2: any): number {
 
 export function condAttr(condition, truthValue: any = "") {
     return condition ? truthValue : undefined;
+}
+
+export function condAttrObject(obj: TypedObj<any>): TypedObj<any> {
+    return _.pickBy(obj, (value, key) => !!value);
 }
 
 export function leftPad(str: string, len: number, pad: string = "0"): string {

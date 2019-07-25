@@ -7,6 +7,7 @@ interface ConnectionComponentProps {
     conn: NodeConnection;
     nodeWidth: number;
     nodeHeight: number;
+    capturePaused: boolean;
 }
 export default class ConnectionComponent extends React.Component<ConnectionComponentProps> {
     public static readonly CAPTURE_TIME = 500;
@@ -20,7 +21,7 @@ export default class ConnectionComponent extends React.Component<ConnectionCompo
 
 
     render() {
-        const {conn, nodeWidth, nodeHeight} = this.props;
+        const {conn, nodeWidth, nodeHeight, capturePaused} = this.props;
 
         //Calculate box container properties
         let style: CSSProperties = conn.calculateStyles(nodeWidth, nodeHeight);
@@ -60,6 +61,7 @@ export default class ConnectionComponent extends React.Component<ConnectionCompo
                      data-line="server"
                      data-capture={condAttr(conn.serverCaptured, conn.serverCaptured)}
                      data-reverse={condAttr(this.isLineCaptureReversed(true))}
+                     data-paused={condAttr(capturePaused)}
                      style={lineStyles}
                 />
             </div>

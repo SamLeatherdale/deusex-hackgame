@@ -18,6 +18,7 @@ export default class Level {
     status: LevelStatus = LevelStatus.INCOMPLETE;
 
     isPlayerDetected = false;
+    stopWormActive = false;
 
     lastUpdated: number;
 

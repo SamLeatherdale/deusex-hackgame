@@ -62,7 +62,9 @@ export default class LevelGrid extends React.Component<LevelGridProps, LevelGrid
                                         key={`${conn.from.key}_${conn.to.key}`}
                                         conn={conn}
                                         nodeWidth={this.NODE_WIDTH}
-                                        nodeHeight={this.NODE_HEIGHT} />
+                                        nodeHeight={this.NODE_HEIGHT}
+                                        capturePaused={level.stopWormActive}
+                            />
                         })}
                     </div>
                 </div>
