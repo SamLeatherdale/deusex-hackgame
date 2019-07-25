@@ -1,18 +1,20 @@
 type callback = () => void;
 
 export default class DelayableTimer {
-    static timers: Map<number, DelayableTimer> = new Map();
-    static uid = 0;
+    private static timers: Map<number, DelayableTimer> = new Map();
+    private static uid = 0;
 
-    readonly id: number;
+    private readonly id: number;
+    private readonly initialTimeout: number;
+    private readonly tags: string[] = [];
+
     readonly promise: Promise<callback>;
-    readonly initialTimeout: number;
-
-    private tags: string[] = [];
     private resolve: callback;
     private reject: callback;
+
     private completed = false;
     private handle = -1;
+    private scheduledComplete: number;
 
     constructor(timeout: number, ...tags: string[]) {
         this.id = DelayableTimer.uid++;
@@ -38,13 +40,24 @@ export default class DelayableTimer {
     }
 
     static rescheduleTimers(tags?: string, timeout?: number) {
-        const timers = this.getTimers(tags);
-        timers.forEach(timer => timer.reschedule(timeout));
+        this.getTimers(tags).forEach(timer => timer.reschedule(timeout));
+    }
+
+    static delayTimers(tags: string, timeout: number) {
+        this.getTimers(tags).forEach(timer => timer.delay(timeout));
     }
 
     static cancelTimers(tags?: string) {
-        const timers = this.getTimers(tags);
-        timers.forEach(timer => timer.cancel());
+        this.getTimers(tags).forEach(timer => timer.cancel());
+    }
+
+    /**
+     * Gets the time remaining on this timer.
+     * Will be negative if the scheduled time has already passed.
+     */
+    getTimeRemaining(): number {
+        const timestamp = new Date().getTime();
+        return this.scheduledComplete - timestamp;
     }
 
     /**
@@ -60,12 +73,21 @@ export default class DelayableTimer {
         }
 
         timeout = typeof timeout === "number" ? timeout : this.initialTimeout;
+        const timestamp = new Date().getTime();
+        this.scheduledComplete = timestamp + timeout;
 
         this.handle = window.setTimeout(() => {
             this.completed = true;
             DelayableTimer.timers.delete(this.id);
             this.resolve();
         }, timeout); //Call resolve when done
+    }
+
+    /**
+     * Delays the timer by the specified amount.
+     */
+    delay(time: number) {
+        this.reschedule(this.getTimeRemaining() + time);
     }
 
     /**

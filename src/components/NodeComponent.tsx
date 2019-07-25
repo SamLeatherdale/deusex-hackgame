@@ -134,7 +134,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         updatePlayer(player, {});
 
         //Delay all server captures
-        DelayableTimer.rescheduleTimers(App.TIMER_SERVER_CAPTURE_KEY, App.STOP_WORM_DURATION);
+        DelayableTimer.delayTimers(App.TIMER_SERVER_CAPTURE_KEY, App.STOP_WORM_DURATION);
 
         updateLevel({stopWormActive: true});
 

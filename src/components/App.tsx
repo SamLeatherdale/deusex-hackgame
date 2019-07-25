@@ -39,7 +39,7 @@ interface AppViewButton {
 
 export default class App extends React.Component<{}, AppState> {
     public static readonly TIMER_SERVER_CAPTURE_KEY = 'server-capture';
-    public static readonly STOP_WORM_DURATION = 5000;
+    public static readonly STOP_WORM_DURATION = 15000;
     private static readonly DEFAULT_LEVEL = 2;
 
     private readonly DISABLE_LEVEL_FAILURE = DEBUG_MODE && true;
@@ -168,9 +168,6 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     captureServerNode(node: LevelNode): void {
-        if (node.key === '3,2') {
-            debugger;
-        }
         const {server} = this.state;
 
         //Find connection(s) to this node
@@ -199,10 +196,8 @@ export default class App extends React.Component<{}, AppState> {
                     return;
                 }
 
-                if (node.type === NodeType.ENTRY) {
-                    if (!this.DISABLE_LEVEL_FAILURE) {
-                        this.updateLevel({status: LevelStatus.FAILED});
-                    }
+                if (node.type === NodeType.ENTRY && !this.DISABLE_LEVEL_FAILURE) {
+                    this.updateLevel({status: LevelStatus.FAILED});
                 } else {
                     this.onCaptureServerNode(node);
                 }
