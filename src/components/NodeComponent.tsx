@@ -10,7 +10,6 @@ import Level, {LevelStatus} from "../classes/Level";
 import {UpgradeType} from "../classes/Upgrade";
 import {ItemType} from "../classes/Item";
 import ConnectionComponent from "./ConnectionComponent";
-import {delay} from "q";
 import DelayableTimer from "../classes/DelayableTimer";
 import App from "./App";
 
@@ -93,17 +92,16 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         });
 
         //Wait for connection animation to complete
-        delay(ConnectionComponent.CAPTURE_TIME)
+        new DelayableTimer(ConnectionComponent.CAPTURE_TIME).promise
         .then(() => {
             conns.forEach(conn => conn.captured = CaptureStatus.CAPTURED);
 
             updateNodes(node, {
                 captured: CaptureStatus.CAPTURING
             });
-
-
+        }).then(() => {
             //Wait for node capturing animation to complete
-            return delay(node.getCaptureTime(this.props.player));
+            return new DelayableTimer(node.getCaptureTime(this.props.player)).promise;
         }).then(() => {
             updateNodes(node, {
                 captured: CaptureStatus.CAPTURED,
@@ -111,7 +109,6 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
 
             this.postCaptureNode();
         });
-
     }
 
     nukeNode() {

@@ -15,7 +15,6 @@ import Level, {LevelStatus} from "../classes/Level";
 import TraceStatusBox from "./TraceStatusBox";
 import LevelNode from "../classes/LevelNode";
 import ConnectionComponent from "./ConnectionComponent";
-import {delay} from "q";
 import {UpgradeType} from "../classes/Upgrade";
 import {DEBUG_MODE} from "../index";
 import DelayableTimer from "../classes/DelayableTimer";
@@ -72,7 +71,7 @@ export default class App extends React.Component<{}, AppState> {
         return this.state.currentView === AppView.LevelGrid;
     }
 
-    updatePlayer(player: Player, values: TypedObj<any>): void {
+    updatePlayer(player: Player, values: TypedObj<any>, callback?: Function): void {
         this.setState(prevState => {
             const player: Player = _.clone(prevState.player);
 
@@ -84,7 +83,7 @@ export default class App extends React.Component<{}, AppState> {
         })
     }
 
-    updateNodes(nodes: NodeSelection, values: Partial<LevelNode>): void {
+    updateNodes(nodes: NodeSelection, values: Partial<LevelNode>, callback?: Function): void {
         let updateNodes;
         if (nodes === true) {
             updateNodes = Object.values(this.state.level.nodes);
@@ -95,10 +94,10 @@ export default class App extends React.Component<{}, AppState> {
         for (let node of updateNodes) {
             node.updatePath(values);
         }
-        this.updateLevel({});
+        this.updateLevel({}, callback);
     }
 
-    updateLevel(values: Partial<Level>): void {
+    updateLevel(values: Partial<Level>, callback?: Function): void {
         this.setState(prevState => {
             const level: Level = _.clone(prevState.level);
             level.updatePath(values);
@@ -110,6 +109,9 @@ export default class App extends React.Component<{}, AppState> {
             //Must happen in callback, as setState must be a pure function
             if (values.isPlayerDetected) {
                 this.startEnemyCapturing();
+            }
+            if (typeof callback === "function") {
+                callback();
             }
         })
     }
@@ -142,31 +144,33 @@ export default class App extends React.Component<{}, AppState> {
      * @param startNodes
      */
     onCaptureServerNode(...startNodes: LevelNode[]): void {
-        const {status} = this.state.level;
-        if (status !== LevelStatus.INCOMPLETE) {
+        if (this.state.level.isComplete()) {
             return;
         }
 
         const nodes = new Map<string, LevelNode>();
         for (const node of startNodes) {
             nodes.set(node.key, node);
+
+            //Add all connected nodes to list
+            for (const connNode of node.getConnectedNodes()) {
+                nodes.set(connNode.key, connNode);
+            }
         }
 
         for (const node of nodes.values()) {
-            const canBeCaptured = !(node.type === NodeType.SERVER || node.isCaptured(true));
+            const canBeCaptured = node.type !== NodeType.SERVER && node.serverCaptured === CaptureStatus.NONE;
 
             if (canBeCaptured) {
                 this.captureServerNode(node);
-            } else {
-                //Add all connected nodes to list
-                for (const connNode of node.getConnectedNodes()) {
-                    nodes.set(connNode.key, connNode);
-                }
             }
         }
     }
 
     captureServerNode(node: LevelNode): void {
+        if (node.key === '3,2') {
+            debugger;
+        }
         const {server} = this.state;
 
         //Find connection(s) to this node
@@ -189,20 +193,20 @@ export default class App extends React.Component<{}, AppState> {
             this.updateNodes(node, {
                 serverCaptured: CaptureStatus.CAPTURED,
                 serverCapturedLevel: server.upgrades.get(UpgradeType.CAPTURE).currentLevel
-            });
-
-            //We don't want to override level being completed
-            if (this.state.level.isComplete()) {
-                return;
-            }
-
-            if (node.type === NodeType.ENTRY) {
-                if (!this.DISABLE_LEVEL_FAILURE) {
-                    this.updateLevel({status: LevelStatus.FAILED});
+            }, () => {
+                //We don't want to override level being completed
+                if (this.state.level.isComplete()) {
+                    return;
                 }
-            } else {
-                this.onCaptureServerNode(node);
-            }
+
+                if (node.type === NodeType.ENTRY) {
+                    if (!this.DISABLE_LEVEL_FAILURE) {
+                        this.updateLevel({status: LevelStatus.FAILED});
+                    }
+                } else {
+                    this.onCaptureServerNode(node);
+                }
+            });
         });
     }
 

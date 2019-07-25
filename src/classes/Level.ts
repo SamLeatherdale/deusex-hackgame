@@ -1,7 +1,7 @@
 import LevelData, {LevelEdgeDirection, NodeType, Point} from "./LevelData";
 import LevelNode from "./LevelNode";
 import NodeConnection from "./NodeConnection";
-import {CaptureStatus, TypedObj} from "../shared";
+import {TypedObj} from "../shared";
 import _ from "lodash";
 
 export enum LevelStatus {
