@@ -1,6 +1,6 @@
 import React, {CSSProperties} from "react";
 import LevelNode from "../classes/LevelNode";
-import {condAttr} from "../shared";
+import {CaptureStatus, condAttr} from "../shared";
 import * as autoBind from "auto-bind";
 import Player from "../classes/Player";
 

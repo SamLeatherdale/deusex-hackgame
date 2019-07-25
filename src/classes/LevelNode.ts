@@ -26,6 +26,7 @@ export default class LevelNode extends NodeData {
     private readonly FORCE_CAPTURE_DETECTION = DEBUG_MODE && true;
     private readonly FORCE_NO_CAPTURE_DETECTION = DEBUG_MODE && false;
     private readonly SERVER_CAPTURE_MULT = DEBUG_MODE ? 2 : 1;
+    private readonly USER_CAPTURE_MULT = DEBUG_MODE ? 3 : 1;
 
     static getKey(x: number, y: number) {
         return `${x},${y}`;
@@ -110,12 +111,20 @@ export default class LevelNode extends NodeData {
         });
     }
 
+    /**
+     * Returns true if the node has completed capturing.
+     * @param server
+     */
     isCaptured(server = false): boolean {
         return server ? this.serverCaptured === CaptureStatus.CAPTURED : this.captured === CaptureStatus.CAPTURED;
     }
 
     isCapturing(server = false): boolean {
         return server ? this.serverCaptured === CaptureStatus.CAPTURING : this.captured === CaptureStatus.CAPTURING;
+    }
+
+    getCaptureStatus(server = false) {
+        return server ? this.serverCaptured : this.captured;
     }
 
     addConnection(connection: NodeConnection): void {
@@ -127,19 +136,21 @@ export default class LevelNode extends NodeData {
     }
 
     canBeCaptured(server = false): boolean {
-        return (this.isConnectedToCaptured(server) && !this.isDisabled(server));
+        return this.isConnectedToCaptured(server)
+            && !this.isDisabled(server)
+            && this.getCaptureStatus(server) === CaptureStatus.NONE;
     }
 
     canBeFortified(): boolean {
-        return this.captured && !this.fortified;
+        return this.isCaptured() && !this.fortified;
     }
 
     canBeNuked(player: Player): boolean {
-        return !this.captured && player.items.get(ItemType.NUKE).count > 0;
+        return !this.isCaptured() && player.items.get(ItemType.NUKE).count > 0;
     }
 
     canBeStopped(player: Player): boolean {
-        return this.captured && player.items.get(ItemType.STOP).count > 0;
+        return this.isCaptured() && player.items.get(ItemType.STOP).count > 0;
     }
 
     isConnectedToCaptured(server = false): boolean {
@@ -188,7 +199,9 @@ export default class LevelNode extends NodeData {
             (captureUpgrade.maxLevel - captureUpgrade.currentLevel) / captureUpgrade.maxLevel;
         let time = this.getCaptureLevel(player) * 1000 * (captureSlowdownMult);
 
-        if (!player.isUser) {
+        if (player.isUser) {
+            time *= this.USER_CAPTURE_MULT;
+        } else {
             time *= this.SERVER_CAPTURE_MULT;
         }
 

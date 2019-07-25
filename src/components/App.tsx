@@ -39,7 +39,7 @@ interface AppViewButton {
 
 export default class App extends React.Component<{}, AppState> {
     public static readonly TIMER_SERVER_CAPTURE_KEY = 'server-capture';
-    public static readonly STOP_WORM_DURATION = 15000;
+    public static readonly STOP_WORM_DURATION = 5000;
     private static readonly DEFAULT_LEVEL = 2;
 
     private readonly DISABLE_LEVEL_FAILURE = DEBUG_MODE && true;
@@ -176,7 +176,7 @@ export default class App extends React.Component<{}, AppState> {
         this.setState({});
 
         //Wait for connection animation to complete
-        new DelayableTimer(ConnectionComponent.CAPTURE_TIME).promise
+        new DelayableTimer(ConnectionComponent.CAPTURE_TIME, App.TIMER_SERVER_CAPTURE_KEY).promise
         .then(() => {
             conns.forEach(conn => conn.serverCaptured = CaptureStatus.CAPTURED);
 

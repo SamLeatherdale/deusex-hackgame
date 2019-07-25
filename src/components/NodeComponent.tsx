@@ -162,9 +162,9 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         }
     }
 
-    static getMask(style: CSSProperties, attributes: TypedObj<any> = {}): ReactElement {
+    static getMask(key: string, style: CSSProperties, attributes: TypedObj<any> = {}): ReactElement {
         return (
-            <div key={JSON.stringify(attributes)}
+            <div key={key}
                  className="level-node-mask"
                  style={style}
                  {...condAttrObject(attributes)}
@@ -183,26 +183,26 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         };
 
         if (node.isCapturing()) {
-            masks.push(NodeComponent.getMask(
+            masks.push(NodeComponent.getMask("user-capturing",
                 {
                     animationDuration: `${node.getCaptureTime(player)}ms`,
                     ...maskStyle
                 }, {"data-capturing": 'user'}));
         }
         if (node.isCapturing(true)) {
-            masks.push(NodeComponent.getMask({
+            masks.push(NodeComponent.getMask("server-capturing",{
                 animationDuration: `${node.getCaptureTime(server)}ms`,
                 ...maskStyle
             }, {"data-capturing": 'server', 'data-paused': level.stopWormActive}));
         }
         if (fortifying) {
-            masks.push(NodeComponent.getMask({
+            masks.push(NodeComponent.getMask("user-fortifying", {
                 animationDuration: `${node.getFortifyTime(player)}ms`,
                 ...maskStyle
             }, {"data-fortifying": true}));
         }
         if (node.appearsCaptured()) {
-            masks.push(NodeComponent.getMask(maskStyle, {"data-captured": true}));
+            masks.push(NodeComponent.getMask("user-captured", maskStyle, {"data-captured": true}));
         }
         return masks;
     }
