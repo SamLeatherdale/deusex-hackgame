@@ -264,6 +264,14 @@
         display: flex;
         position: relative;
 
+        &:before {
+            animation-name: $animation-capture;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
+            animation-duration: inherit; //Set on parent
+            animation-play-state: paused;
+        }
+
         @include line-image(white);
 
         &[data-capture] {
@@ -295,10 +303,7 @@
         &[data-capture='capturing'] {
             &:before {
                 height: 0;
-                animation-name: $animation-capture;
-                animation-timing-function: linear;
-                animation-iteration-count: 1;
-                animation-duration: inherit; //Set on parent
+                animation-play-state: running;
             }
         }
 

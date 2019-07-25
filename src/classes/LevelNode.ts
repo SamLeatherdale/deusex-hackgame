@@ -5,6 +5,7 @@ import _ from "lodash";
 import Player from "./Player";
 import {UpgradeType} from "./Upgrade";
 import {ItemType} from "./Item";
+import {DEBUG_MODE} from "../index";
 
 export default class LevelNode extends NodeData {
     lastUpdated: number;
@@ -19,8 +20,9 @@ export default class LevelNode extends NodeData {
     fortified = false;
     menuOpen = false;
 
-    private static readonly FORCE_CAPTURE_DETECTION = true;
-    private static readonly FORCE_NO_CAPTURE_DETECTION = false;
+    private readonly FORCE_CAPTURE_DETECTION = DEBUG_MODE && true;
+    private readonly FORCE_NO_CAPTURE_DETECTION = DEBUG_MODE && false;
+    private readonly SERVER_CAPTURE_MULT = DEBUG_MODE ? 2 : 1;
 
     static getKey(x: number, y: number) {
         return `${x},${y}`;
@@ -92,9 +94,14 @@ export default class LevelNode extends NodeData {
 
     /**
      * Gets the node connections that have at least one captured end.
+     * @param server    Whether to check captured by the server or the player.
+     * @param getCaptured  whether to return connections that have already been captured.
      */
-    getActiveConnectionsToNode(server = false): NodeConnection[] {
+    getActiveConnectionsToNode(server = false, getCaptured = false): NodeConnection[] {
         return this.connections.filter(conn => {
+            if (!getCaptured && conn.isCaptured(server)) {
+                return false;
+            }
             const start = conn.getOtherNode(this);
             return start.isCaptured(server) && conn.endsWith(this);
         });
@@ -165,7 +172,7 @@ export default class LevelNode extends NodeData {
         let time = this.level * 1000 * (captureSlowdownMult);
 
         if (!player.isUser) {
-            time *= 5;
+            time *= this.SERVER_CAPTURE_MULT;
         }
 
         return time;
@@ -179,10 +186,10 @@ export default class LevelNode extends NodeData {
      * Gets the detection chance out of 100.
      */
     getDetectionChance(player: Player): number {
-        if (LevelNode.FORCE_CAPTURE_DETECTION) {
+        if (this.FORCE_CAPTURE_DETECTION) {
             return 100;
         }
-        if (LevelNode.FORCE_NO_CAPTURE_DETECTION) {
+        if (this.FORCE_NO_CAPTURE_DETECTION) {
             return 0;
         }
 

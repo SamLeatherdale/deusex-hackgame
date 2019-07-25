@@ -71,6 +71,10 @@ export default class NodeConnection {
         return (this.from.isDisabled() || this.to.isDisabled());
     }
 
+    isCaptured(server = false): boolean {
+        return server ? this.serverCaptured === CaptureStatus.CAPTURED : this.captured === CaptureStatus.CAPTURED;
+    }
+
     // getLength() {
     //     return Math.sqrt(
     //         Math.pow((this.x2 - this.x1), 2) + Math.pow((this.y2 - this.y1), 2)

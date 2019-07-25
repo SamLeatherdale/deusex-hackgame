@@ -1,6 +1,7 @@
 import React, {CSSProperties} from "react";
 import NodeConnection from "../classes/NodeConnection";
 import {condAttr} from "../shared";
+import {DEBUG_MODE} from "../index";
 
 interface ConnectionComponentProps {
     conn: NodeConnection;
@@ -9,7 +10,7 @@ interface ConnectionComponentProps {
 }
 export default class ConnectionComponent extends React.Component<ConnectionComponentProps> {
     public static readonly CAPTURE_TIME = 500;
-    private static readonly SHOW_ROTATION_VALUE = false;
+    private readonly SHOW_ROTATION_VALUE = DEBUG_MODE && false;
 
     isLineCaptureReversed(server = false): boolean {
         const {conn} = this.props;
@@ -51,7 +52,7 @@ export default class ConnectionComponent extends React.Component<ConnectionCompo
                      style={lineStyles}
                     />
                 <div className="level-connector-center">
-                    {ConnectionComponent.SHOW_ROTATION_VALUE &&
+                    {this.SHOW_ROTATION_VALUE &&
                         <span style={{color: "white"}}>{rotation}</span>}
                     {!conn.bi && <div className="level-connector-arrow" style={styleArrow} />}
                 </div>

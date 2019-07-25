@@ -36,7 +36,7 @@ interface AppViewButton {
 }
 
 export default class App extends React.Component<{}, AppState> {
-    static readonly defaultLevel = 2;
+    private static readonly defaultLevel = 2;
 
     constructor(props) {
         super(props);
@@ -112,14 +112,6 @@ export default class App extends React.Component<{}, AppState> {
 
     changeView(view: AppView) {
         this.setState({currentView: view});
-    }
-
-    onLevelComplete(level: Level) {
-        //this.setState({levelStatus: level.status});
-    }
-
-    onLevelFailed() {
-        this.updateLevel({status: LevelStatus.FAILED});
     }
 
     dismissLevelModal(): void {
