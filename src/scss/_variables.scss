@@ -23,14 +23,17 @@ $fortify-color: $dx-bg-light;
 $filter-black: brightness(0) saturate(100%);
 $filter-capture: invert(42%) sepia(36%) saturate(2904%) hue-rotate(179deg) brightness(104%) contrast(105%);
 
+//Stacking context: #app-container
 $zindex-level-alert: 1;
 $zindex-status-bar: 2;
+$zindex-level-modal-bg: 3;
+
+//Stacking context: .level-node
 $zindex-node-mask-captured: 5;
 $zindex-node-mask: 6;
-$zindex-node-level-text: 8;
+$zindex-node-level-text: 7;
+$zindex-node-badge: 7;
 $zindex-node-menu: 10;
-$zindex-node-menu-tooltip: 11;
-$zindex-level-modal-bg: 100;
 
 $ipad-port: 1023px;
 

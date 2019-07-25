@@ -28,7 +28,7 @@ export default class UpgradeDefaults {
                 ],
                 type: UpgradeType.FORTIFY,
                 maxLevel: 3,
-                currentLevel: 0
+                currentLevel: 1
             },
             {
                 title: "Stealth",

@@ -16,8 +16,11 @@ export default class LevelNode extends NodeData {
 
     captured = CaptureStatus.NONE;
     serverCaptured = CaptureStatus.NONE;
+    serverCapturedLevel = 0;
 
     fortified = false;
+    fortifiedLevel = 0;
+
     menuOpen = false;
 
     private readonly FORCE_CAPTURE_DETECTION = DEBUG_MODE && true;
@@ -156,7 +159,21 @@ export default class LevelNode extends NodeData {
     }
 
     /**
+     * Gets the effective level of this node when trying to capture.
+     * For the player, this is base level + server level
+     * For the server, this is base level + player fortify level
+     */
+    getCaptureLevel(player: Player) {
+        if (player.isUser) {
+            return this.level + this.serverCapturedLevel;
+        } else {
+            return this.level + this.fortifiedLevel;
+        }
+    }
+
+    /**
      * Gets the time to capture the node in ms.
+     * @param player    The player who is attempting to capture the node.
      */
     getCaptureTime(player: Player): number {
         /*    | N1   | N2   | N3   | N4   | N5   |
@@ -169,7 +186,7 @@ export default class LevelNode extends NodeData {
         const captureUpgrade = player.upgrades.get(UpgradeType.CAPTURE);
         const captureSlowdownMult =
             (captureUpgrade.maxLevel - captureUpgrade.currentLevel) / captureUpgrade.maxLevel;
-        let time = this.level * 1000 * (captureSlowdownMult);
+        let time = this.getCaptureLevel(player) * 1000 * (captureSlowdownMult);
 
         if (!player.isUser) {
             time *= this.SERVER_CAPTURE_MULT;

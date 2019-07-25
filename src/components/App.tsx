@@ -16,6 +16,8 @@ import TraceStatusBox from "./TraceStatusBox";
 import LevelNode from "../classes/LevelNode";
 import ConnectionComponent from "./ConnectionComponent";
 import {delay} from "q";
+import {UpgradeType} from "../classes/Upgrade";
+import {DEBUG_MODE} from "../index";
 
 export enum AppView {
     LevelGrid = "grid",
@@ -37,6 +39,7 @@ interface AppViewButton {
 
 export default class App extends React.Component<{}, AppState> {
     private static readonly defaultLevel = 2;
+    private readonly DISABLE_LEVEL_FAILURE = DEBUG_MODE && true;
 
     constructor(props) {
         super(props);
@@ -118,6 +121,12 @@ export default class App extends React.Component<{}, AppState> {
         this.setState({currentView: AppView.LevelSelect});
     }
 
+    dismissNodeMenu(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+        if (this.isLevelGridView()) {
+            this.updateNodes(true, {menuOpen: false});
+        }
+    }
+
     startEnemyCapturing(): void {
         const {level} = this.state;
         this.onCaptureServerNode(...level.getNodesByType(NodeType.SERVER));
@@ -153,6 +162,8 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     captureServerNode(node: LevelNode): void {
+        const {server} = this.state;
+
         //Find connection(s) to this node
         const conns = node.getActiveConnectionsToNode(true);
         conns.forEach(conn => conn.serverCaptured = CaptureStatus.CAPTURING);
@@ -169,7 +180,8 @@ export default class App extends React.Component<{}, AppState> {
             return delay(node.getCaptureTime(this.state.server));
         }).then(() => {
             this.updateNodes(node, {
-                serverCaptured: CaptureStatus.CAPTURED
+                serverCaptured: CaptureStatus.CAPTURED,
+                serverCapturedLevel: server.upgrades.get(UpgradeType.CAPTURE).currentLevel
             });
 
             //We don't want to override level being completed
@@ -178,7 +190,9 @@ export default class App extends React.Component<{}, AppState> {
             }
 
             if (node.type === NodeType.ENTRY) {
-                this.updateLevel({status: LevelStatus.FAILED});
+                if (!this.DISABLE_LEVEL_FAILURE) {
+                    this.updateLevel({status: LevelStatus.FAILED});
+                }
             } else {
                 this.onCaptureServerNode(node);
             }
@@ -264,6 +278,7 @@ export default class App extends React.Component<{}, AppState> {
             <div
                 id="app-container"
                 style={RhombusContainer.getBorderImage(appBorderProps)}
+                onClick={this.dismissNodeMenu}
             >
                 {showAlert && <div className="level-alert" />}
                 {showModal &&

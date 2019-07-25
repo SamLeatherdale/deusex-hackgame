@@ -128,12 +128,17 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     fortifyNode() {
+        const {player} = this.props;
+
         if (this.props.node.canBeFortified()) {
             this.props.updateNodes(this.props.node, {menuOpen: false});
             this.setState({fortifying: true});
 
             setTimeout(() => {
-                this.props.updateNodes(this.props.node, {fortified: true});
+                this.props.updateNodes(this.props.node, {
+                    fortified: true,
+                    fortifiedLevel: player.upgrades.get(UpgradeType.FORTIFY).currentLevel
+                });
                 this.setState({fortifying: false});
             }, this.props.node.getFortifyTime(this.props.player))
         }
@@ -211,8 +216,13 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
                     {this.getMasks(spriteUrl)}
                     <div className="level-node-img" style={backgroundStyle} />
                     <div className="level-node-level-text">{node.level}</div>
+                    {node.fortified &&
+                    <div className="level-node-badge" data-badge="fortify">
+                        {node.fortifiedLevel}
+                    </div>
+                    }
                     {node.isCaptured(true) && node.type !== NodeType.SERVER &&
-                    <div className="level-node-server-captured">
+                    <div className="level-node-badge" data-badge="server">
                         {server.upgrades.get(UpgradeType.CAPTURE).currentLevel}
                     </div>
                     }

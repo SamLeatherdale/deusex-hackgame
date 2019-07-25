@@ -32,15 +32,11 @@ export default class LevelGrid extends React.Component<LevelGridProps, LevelGrid
         autoBind.react(this);
     }
 
-    onClickBg(e: React.MouseEvent<HTMLElement, MouseEvent>) {
-        this.props.updateNodes(true, {menuOpen: false});
-    }
-
     render() {
         const {level} = this.props;
 
         return (
-            <div className="level-container" onClick={this.onClickBg}>
+            <div className="level-container">
                 <div className="level-grid-container">
                     <div className="level-grid" style={{
                         display: "grid",

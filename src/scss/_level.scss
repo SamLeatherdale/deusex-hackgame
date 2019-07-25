@@ -1,6 +1,7 @@
 .level-pan-container {
     overflow: hidden;
     cursor: move !important;
+    height: 100%;
 
     &:focus {
         outline: 0;
@@ -49,18 +50,26 @@
         font-size: 18px;
     }
 
-    .level-node-server-captured {
+    .level-node-badge {
         position: absolute;
-        z-index: $zindex-node-level-text;
-        bottom: 0;
-        right: 0;
+        z-index: $zindex-node-badge;
         padding: 4px 6px;
         border-radius: 4px;
         color: white;
-        background-color: $server-capture-bg;
 
         &:before {
             content: '+';
+        }
+
+        &[data-badge='fortify'] {
+            top: 0;
+            right: 0;
+            background-color: $capture-color;
+        }
+        &[data-badge='server'] {
+            bottom: 0;
+            right: 0;
+            background-color: $server-capture-bg;
         }
     }
 
@@ -189,7 +198,7 @@
         position: absolute;
         background-color: $bg-default;
         color: white;
-        z-index: $zindex-node-menu-tooltip;
+        z-index: 1;
 
         $vertical: ("top", "bottom");
         $horizontal: ("left", "right");
@@ -338,6 +347,7 @@
         overflow: visible;
         display: flex;
         justify-content: center;
+        z-index: 1;
 
         .level-connector-arrow {
             &:after {
