@@ -1,0 +1,84 @@
+{
+  "$schema": "../level.schema.json",
+  "nodes": [
+    {
+      "x": 0,
+      "y": 0,
+      "level": 5,
+      "type": "entry"
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "level": 1,
+      "type": "data"
+    },
+    {
+      "x": 0,
+      "y": 1,
+      "level": 3,
+      "type": "folder"
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "level": 4,
+      "type": "folder"
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "level": 5,
+      "type": "data"
+    },
+    {
+      "x": 0,
+      "y": 3,
+      "level": 1,
+      "type": "api",
+      "api": "clearance"
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "level": 4,
+      "type": "folder"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "level": 3,
+      "type": "exit"
+    },
+    {
+      "x": 0,
+      "y": 5,
+      "level": 4,
+      "type": "folder"
+    },
+    {
+      "x": 0,
+      "y": 6,
+      "level": 5,
+      "type": "server"
+    },
+    {
+      "x": 1,
+      "y": 6,
+      "level": 5,
+      "type": "data"
+    }
+  ],
+  "edges": [
+    [[0,0], [0,1], "bid"],
+    [[1,0], [0,1], "rtl"],
+    [[0,1], [2,2], "bid"],
+    [[2,2], [3,2], "ltr"],
+    [[2,2], [2,4], "bid"],
+    [[2,4], [0,3], "ltr"],
+    [[2,4], [3,4], "ltr"],
+    [[2,4], [0,5], "bid"],
+    [[0,5], [0,6], "bid"],
+    [[0,5], [1,6], "ltr"]
+  ]
+}

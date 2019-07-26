@@ -23,7 +23,7 @@ type LevelEdgeData = [Point, Point, LevelEdgeDirection];
 export enum LevelEdgeDirection {
     LTR = "ltr",
     RTL = "rtl",
-    BI = "bi"
+    BI = "bid"
 }
 
 export enum NodeType {
