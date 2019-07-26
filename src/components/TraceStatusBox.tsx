@@ -11,9 +11,31 @@ interface TraceStatusBoxProps {
 
 interface TraceStatusBoxState {
     timeLeft: number; //Time in ms
+    paused: boolean;
+    pauseIntervals: PauseInterval[];
+}
+
+class PauseInterval {
+    private readonly startTime: number = 0;
+    private stopTime: number = 0;
+
+    constructor() {
+        this.startTime = new Date().getTime();
+    }
+    stop() {
+        this.stopTime = new Date().getTime();
+    }
+    isComplete() {
+        return this.stopTime > 0;
+    }
+    getInterval(): number {
+        return this.stopTime - this.startTime;
+    }
 }
 
 export default class TraceStatusBox extends React.Component<TraceStatusBoxProps, TraceStatusBoxState> {
+    initialTimeout: number;
+    startTimestamp: number;
     borderStyle: CSSProperties;
     tickHandle: number;
 
@@ -23,12 +45,37 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
         paused: false
     };
 
+    static getDerivedStateFromProps(nextProps: TraceStatusBoxProps, prevState: TraceStatusBoxState): Partial<TraceStatusBoxState> {
+        if (nextProps.paused !== prevState.paused) {
+            const pauseIntervals = prevState.pauseIntervals.slice();
+            if (nextProps.paused) {
+                pauseIntervals.push(new PauseInterval());
+            } else if (pauseIntervals.length) {
+                const interval = pauseIntervals[pauseIntervals.length - 1];
+                interval.stop();
+            }
+
+            return {
+                pauseIntervals: pauseIntervals,
+                paused: nextProps.paused
+            }
+        }
+        return null;
+    }
+
+
     constructor(props: TraceStatusBoxProps) {
         super(props);
 
+        this.initialTimeout = props.time;
+        this.startTimestamp = new Date().getTime();
+
         this.state = {
-            timeLeft: this.props.time
+            timeLeft: props.time,
+            pauseIntervals: [],
+            paused: props.paused
         };
+
         this.borderStyle = RhombusContainer.getBorderImage({
             corners: [RhombusCorner.TOP_LEFT, RhombusCorner.BOTTOM_RIGHT],
             fgColor: "red"
@@ -44,8 +91,19 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
         this.tickHandle = undefined;
     }
 
+    getTimeLeft(): number {
+        const now = new Date().getTime();
+        const realElapsed = now - this.startTimestamp;
+
+        //Subtract any pauses from the elapsed
+        const pauseTime = this.state.pauseIntervals.filter(p => p.isComplete()).map(p => p.getInterval()).reduce((sum, t) => sum + t, 0);
+        const elapsed = realElapsed - pauseTime;
+        
+        return this.initialTimeout - elapsed;
+    }
+
     /**
-     * Updates the warning timer in 10ms increments.
+     * Updates the warning timer, using the frequency specified by the interval.
      */
     tick() {
         if (this.props.paused) {
@@ -55,7 +113,7 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
         let done = false;
 
         this.setState((prevState) => {
-            let newTime = prevState.timeLeft - this.props.interval;
+            let newTime = this.getTimeLeft();
             if (newTime <= 0) {
                 newTime = 0;
                 done = true;
