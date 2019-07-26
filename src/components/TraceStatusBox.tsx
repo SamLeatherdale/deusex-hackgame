@@ -98,8 +98,8 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
         //Subtract any pauses from the elapsed
         const pauseTime = this.state.pauseIntervals.filter(p => p.isComplete()).map(p => p.getInterval()).reduce((sum, t) => sum + t, 0);
         const elapsed = realElapsed - pauseTime;
-        
-        return this.initialTimeout - elapsed;
+
+        return this.props.time - elapsed;
     }
 
     /**

@@ -19,8 +19,8 @@ interface NodeComponentProps {
     node: LevelNode;
     player: Player;
     server: Player;
-    updateNodes: (node: NodeSelection, values: Partial<LevelNode>) => void;
-    updateLevel: (values: Partial<Level>) => void;
+    updateNodes: (node: NodeSelection, values: Partial<LevelNode>, callback?: Function) => void;
+    updateLevel: (values: Partial<Level>, callback?: Function) => void;
     updatePlayer: (player: Player, values: TypedObj<any>) => void;
 }
 
@@ -155,19 +155,24 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     fortifyNode() {
-        const {player} = this.props;
+        const {player, node, updateNodes, updateLevel} = this.props;
 
-        if (this.props.node.canBeFortified()) {
-            this.props.updateNodes(this.props.node, {menuOpen: false});
+        if (node.canBeFortified()) {
+            updateNodes(node, {menuOpen: false});
             this.setState({fortifying: true});
 
             setTimeout(() => {
-                this.props.updateNodes(this.props.node, {
+                updateNodes(node, {
                     fortified: true,
-                    fortifiedLevel: player.upgrades.get(UpgradeType.FORTIFY).currentLevel
+                    fortifiedLevel: player.upgrades.get(UpgradeType.FORTIFY).currentLevel,
+                }, () => {
+                    //Fortifying the node could change which route is fastest, so we need to recalculate capture time
+                    updateLevel({
+                        captureTime: this.calculateLevelCaptureTime()
+                    });
                 });
                 this.setState({fortifying: false});
-            }, this.props.node.getFortifyTime(this.props.player))
+            }, node.getFortifyTime(player))
         }
     }
 
@@ -208,7 +213,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
             masks.push(NodeComponent.getMask("user-fortifying", {
                 animationDuration: `${node.getFortifyTime(player)}ms`,
                 ...maskStyle
-            }, {"data-fortifying": true}));
+            }, {"data-capturing": "fortify"}));
         }
         if (node.appearsCaptured()) {
             masks.push(NodeComponent.getMask("user-captured", maskStyle, {"data-captured": true}));

@@ -119,9 +119,8 @@
                 background-color: rgba($server-capture-color, $capturing-opacity);
             }
         }
-        &[data-fortifying] {
+        &[data-capturing='fortify'] {
             &:before {
-                animation-play-state: running;
                 background-color: rgba($fortify-color, $capturing-opacity);
             }
         }

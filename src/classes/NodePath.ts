@@ -1,9 +1,10 @@
 import LevelNode from "./LevelNode";
 import Player from "./Player";
-import {CaptureStatus, genericCompare} from "../shared";
+import {genericCompare} from "../shared";
 import ConnectionComponent from "../components/ConnectionComponent";
 import NodeConnection from "./NodeConnection";
 import {DEBUG_MODE} from "../index";
+import {NodeType} from "./LevelData";
 
 export default class NodePath {
     start: LevelNode;
@@ -63,14 +64,14 @@ export default class NodePath {
     }
 
     calculateCaptureTime(server: Player) {
-        const nodes = this.path.filter(node => node.serverCaptured === CaptureStatus.NONE);
+        const nodes = this.path.filter(node => node.type !== NodeType.SERVER); //node.serverCaptured === CaptureStatus.NONE);
 
         //Calculate capture time for nodes
         const nodeTimes = nodes.map(node => node.getCaptureTime(server));
         const nodeTime = nodeTimes.reduce((sum, t) => sum + t, 0);
 
         //Add in time for connections
-        const conns = this.getPathConnections().filter(conn => conn.serverCaptured === CaptureStatus.NONE);
+        const conns = this.getPathConnections(); //.filter(conn => conn.serverCaptured === CaptureStatus.NONE);
         const connTime = conns.length * ConnectionComponent.CAPTURE_TIME;
 
         this.captureTime = nodeTime + connTime;
