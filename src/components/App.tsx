@@ -42,7 +42,7 @@ export default class App extends React.Component<{}, AppState> {
     public static readonly STOP_WORM_DURATION = 5000;
     private static readonly DEFAULT_LEVEL = 2;
 
-    private readonly DISABLE_LEVEL_FAILURE = DEBUG_MODE && true;
+    private readonly DISABLE_LEVEL_FAILURE = DEBUG_MODE && false;
 
 
     constructor(props) {
@@ -328,7 +328,7 @@ export default class App extends React.Component<{}, AppState> {
                         <div className="app-status-bar-right">
                             {level.isPlayerDetected &&
                             <TraceStatusBox
-                                time={10}
+                                time={level.captureTime}
                                 paused={level.isComplete() || level.stopWormActive}
                                 //onTimeOut={this.onLevelFailed}
                             />

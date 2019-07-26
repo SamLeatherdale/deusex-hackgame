@@ -12,6 +12,7 @@ import {ItemType} from "../classes/Item";
 import ConnectionComponent from "./ConnectionComponent";
 import DelayableTimer from "../classes/DelayableTimer";
 import App from "./App";
+import NodePath from "../classes/NodePath";
 
 interface NodeComponentProps {
     level: Level;
@@ -65,6 +66,11 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         }
     }
 
+    calculateLevelCaptureTime(): number {
+        const {server, level} = this.props;
+        return NodePath.calculateMinCaptureTime(server, level.getNodesByType(NodeType.SERVER), level.getNodesByType(NodeType.ENTRY));
+    }
+
     postCaptureNode(isNuke: boolean = false) {
         const {node, updateLevel, player, level} = this.props;
 
@@ -76,7 +82,10 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         if (level.goalCaptured()) {
             updateLevel({status: LevelStatus.COMPLETE});
         } else if (!isNuke && rollTheDice(node.getDetectionChance(player))) {
-            updateLevel({isPlayerDetected: true});
+            updateLevel({
+                isPlayerDetected: true,
+                captureTime: this.calculateLevelCaptureTime()
+            });
         }
     }
 

@@ -26,7 +26,7 @@ export default class LevelNode extends NodeData {
     private readonly FORCE_CAPTURE_DETECTION = DEBUG_MODE && true;
     private readonly FORCE_NO_CAPTURE_DETECTION = DEBUG_MODE && false;
     private readonly SERVER_CAPTURE_MULT = DEBUG_MODE ? 2 : 1;
-    private readonly USER_CAPTURE_MULT = DEBUG_MODE ? 3 : 1;
+    private readonly USER_CAPTURE_MULT = DEBUG_MODE ? 1 : 1;
 
     static getKey(x: number, y: number) {
         return `${x},${y}`;
@@ -84,9 +84,17 @@ export default class LevelNode extends NodeData {
         return this.key === node.key;
     }
 
+    toString(): string {
+        return `${this.key} (${this.type})`;
+    }
+
     /*---------
      * Capture state accessors
      *---------*/
+
+    /**
+     * Gets all nodes connected to this node.
+     */
     getConnectedNodes(): LevelNode[] {
         const nodes = new Map<string, LevelNode>();
         for (const conn of this.connections) {
@@ -94,6 +102,15 @@ export default class LevelNode extends NodeData {
             nodes.set(node.key, node);
         }
         return Array.from(nodes.values());
+    }
+
+    /**
+     * Gets the connection that connects this node to the given node.
+     * @param otherNode
+     */
+    getConnection(otherNode: LevelNode): NodeConnection {
+        const conns = this.connections.filter(conn => conn.getOtherNode(this).equals(otherNode));
+        return conns.length > 0 ? conns[0] : null;
     }
 
     /**

@@ -3,14 +3,14 @@ import RhombusContainer, {RhombusCorner} from "../classes/RhombusContainer";
 import * as autoBind from "auto-bind";
 
 interface TraceStatusBoxProps {
-    time: number;
-    interval?: number;
+    time: number; //Time in ms
+    interval?: number; //Interval in ms
     onTimeOut?: () => void;
     paused?: boolean;
 }
 
 interface TraceStatusBoxState {
-    timeLeft: number;
+    timeLeft: number; //Time in ms
 }
 
 export default class TraceStatusBox extends React.Component<TraceStatusBoxProps, TraceStatusBoxState> {
@@ -55,7 +55,7 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
         let done = false;
 
         this.setState((prevState) => {
-            let newTime = prevState.timeLeft - this.props.interval / 1000;
+            let newTime = prevState.timeLeft - this.props.interval;
             if (newTime <= 0) {
                 newTime = 0;
                 done = true;
@@ -85,7 +85,7 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
                     <div className="trace-status-subtitle">Warning</div>
                 </div>
                 <div className="trace-status-timer">
-                    {this.state.timeLeft.toFixed(2)}
+                    {(this.state.timeLeft / 1000).toFixed(2)}
                 </div>
             </div>
         )
