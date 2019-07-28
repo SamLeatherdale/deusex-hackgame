@@ -1,7 +1,6 @@
 import LevelNode from "./LevelNode";
 import Player from "./Player";
 import {genericCompare} from "../shared";
-import ConnectionComponent from "../components/ConnectionComponent";
 import NodeConnection from "./NodeConnection";
 import {DEBUG_MODE} from "../index";
 import {NodeType} from "./LevelData";
@@ -72,11 +71,11 @@ export default class NodePath {
 
         //Add in time for connections
         const conns = this.getPathConnections(); //.filter(conn => conn.serverCaptured === CaptureStatus.NONE);
-        const connTime = conns.length * ConnectionComponent.CAPTURE_TIME;
+        const connTime = conns.length * NodeConnection.getCaptureTime(server);
 
         this.captureTime = nodeTime + connTime;
         if (DEBUG_MODE) {
-            console.log(`${nodeTimes.join(", ")} + ${conns.length} x ${ConnectionComponent.CAPTURE_TIME}ms`);
+            console.log(`${nodeTimes.join(", ")} + ${conns.length} x ${NodeConnection.getCaptureTime(server)}ms`);
         }
     }
 

@@ -7,10 +7,11 @@ interface ConnectionComponentProps {
     conn: NodeConnection;
     nodeWidth: number;
     nodeHeight: number;
+    captureTimePlayer: number;
+    captureTimeServer: number;
     capturePaused: boolean;
 }
 export default class ConnectionComponent extends React.Component<ConnectionComponentProps> {
-    public static readonly CAPTURE_TIME = 500;
     private readonly SHOW_ROTATION_VALUE = DEBUG_MODE && false;
 
     isLineCaptureReversed(server = false): boolean {
@@ -21,7 +22,7 @@ export default class ConnectionComponent extends React.Component<ConnectionCompo
 
 
     render() {
-        const {conn, nodeWidth, nodeHeight, capturePaused} = this.props;
+        const {conn, nodeWidth, nodeHeight, capturePaused, captureTimePlayer, captureTimeServer} = this.props;
 
         //Calculate box container properties
         let style: CSSProperties = conn.calculateStyles(nodeWidth, nodeHeight);
@@ -35,11 +36,6 @@ export default class ConnectionComponent extends React.Component<ConnectionCompo
             styleArrow.transform = "rotate(180deg)";
         }
 
-        //Calculate child line properties
-        const lineStyles: CSSProperties = {
-            animationDuration: `${ConnectionComponent.CAPTURE_TIME}ms`
-        };
-
         return (
             <div className="level-connector"
                  style={style}
@@ -50,7 +46,7 @@ export default class ConnectionComponent extends React.Component<ConnectionCompo
                      data-line="user"
                      data-capture={condAttr(conn.captured, conn.captured)}
                      data-reverse={condAttr(this.isLineCaptureReversed())}
-                     style={lineStyles}
+                     style={{animationDuration: `${captureTimePlayer}ms`}}
                     />
                 <div className="level-connector-center">
                     {this.SHOW_ROTATION_VALUE &&
@@ -62,7 +58,7 @@ export default class ConnectionComponent extends React.Component<ConnectionCompo
                      data-capture={condAttr(conn.serverCaptured, conn.serverCaptured)}
                      data-reverse={condAttr(this.isLineCaptureReversed(true))}
                      data-paused={condAttr(capturePaused)}
-                     style={lineStyles}
+                     style={{animationDuration: `${captureTimeServer}ms`}}
                 />
             </div>
         )

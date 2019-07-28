@@ -2,7 +2,8 @@ import LevelNode from "./LevelNode";
 import {CSSProperties} from "react";
 import {PointObj} from "./LevelData";
 import {CaptureStatus, genericCompare} from "../shared";
-
+import Player from "./Player";
+import {UpgradeType} from "./Upgrade";
 
 
 class OffsetContainer {
@@ -39,6 +40,20 @@ export default class NodeConnection {
         this.from = from;
         this.to = to;
         this.bi = bi;
+    }
+
+    static getCaptureTime(player: Player): number {
+        if (player.isUser) {
+            return 1000;
+        }
+
+        const captureLevel = player.upgrades.get(UpgradeType.CAPTURE).currentLevel;
+        let time = 1750 - (250 * captureLevel);
+
+        if (time < 500) {
+            time = 500;
+        }
+        return time;
     }
 
     /**

@@ -14,10 +14,10 @@ import UpgradesView from "./UpgradesView";
 import Level, {LevelStatus} from "../classes/Level";
 import TraceStatusBox from "./TraceStatusBox";
 import LevelNode from "../classes/LevelNode";
-import ConnectionComponent from "./ConnectionComponent";
 import {UpgradeType} from "../classes/Upgrade";
 import {DEBUG_MODE} from "../index";
 import DelayableTimer from "../classes/DelayableTimer";
+import NodeConnection from "../classes/NodeConnection";
 
 export enum AppView {
     LevelGrid = "grid",
@@ -176,7 +176,7 @@ export default class App extends React.Component<{}, AppState> {
         this.setState({});
 
         //Wait for connection animation to complete
-        new DelayableTimer(ConnectionComponent.CAPTURE_TIME, App.TIMER_SERVER_CAPTURE_KEY).promise
+        new DelayableTimer(NodeConnection.getCaptureTime(server), App.TIMER_SERVER_CAPTURE_KEY).promise
         .then(() => {
             conns.forEach(conn => conn.serverCaptured = CaptureStatus.CAPTURED);
 

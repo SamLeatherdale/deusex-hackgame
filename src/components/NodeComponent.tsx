@@ -9,10 +9,10 @@ import Player from "../classes/Player";
 import Level, {LevelStatus} from "../classes/Level";
 import {UpgradeType} from "../classes/Upgrade";
 import {ItemType} from "../classes/Item";
-import ConnectionComponent from "./ConnectionComponent";
 import DelayableTimer from "../classes/DelayableTimer";
 import App from "./App";
 import NodePath from "../classes/NodePath";
+import NodeConnection from "../classes/NodeConnection";
 
 interface NodeComponentProps {
     level: Level;
@@ -90,7 +90,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
     }
 
     captureNode() {
-        const {node, updateNodes} = this.props;
+        const {node, updateNodes, player} = this.props;
 
         //Find connection(s) to this node
         const conns = node.getActiveConnectionsToNode();
@@ -101,7 +101,7 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         });
 
         //Wait for connection animation to complete
-        new DelayableTimer(ConnectionComponent.CAPTURE_TIME).promise
+        new DelayableTimer(NodeConnection.getCaptureTime(player)).promise
         .then(() => {
             conns.forEach(conn => conn.captured = CaptureStatus.CAPTURED);
 

@@ -7,6 +7,7 @@ import ConnectionComponent from "./ConnectionComponent";
 import {NodeSelection, TypedObj} from "../shared";
 import LevelNode from "../classes/LevelNode";
 import Player from "../classes/Player";
+import NodeConnection from "../classes/NodeConnection";
 
 interface LevelGridProps {
     level: Level;
@@ -33,7 +34,7 @@ export default class LevelGrid extends React.Component<LevelGridProps, LevelGrid
     }
 
     render() {
-        const {level} = this.props;
+        const {level, player, server} = this.props;
 
         return (
             <div className="level-container">
@@ -64,6 +65,8 @@ export default class LevelGrid extends React.Component<LevelGridProps, LevelGrid
                                         nodeWidth={this.NODE_WIDTH}
                                         nodeHeight={this.NODE_HEIGHT}
                                         capturePaused={level.stopWormActive}
+                                        captureTimePlayer={NodeConnection.getCaptureTime(player)}
+                                        captureTimeServer={NodeConnection.getCaptureTime(server)}
                             />
                         })}
                     </div>
