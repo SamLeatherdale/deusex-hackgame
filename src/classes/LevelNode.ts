@@ -202,19 +202,42 @@ export default class LevelNode extends NodeData {
     /**
      * Gets the time to capture the node in ms.
      * @param player    The player who is attempting to capture the node.
+     * @param isFortify
      */
-    getCaptureTime(player: Player): number {
-        /*    | N1   | N2   | N3   | N4   | N5   |
-         * P1 | 1000 | 2000 | 3000 | 4000 | 5000 |
-         * P2 | 750  | 1000 | 1000 | 1000 | 1000 |
-         * P3 | 500  | 1000 | 1000 | 1000 | 1000 |
-         * P4 | 1000 | 1000 | 1000 | 1000 | 1000 |
-         * P5 | 1000 | 1000 | 1000 | 1000 | 1000 |
+    getCaptureTime(player: Player, isFortify = false): number {
+        /* PLAYER CAPTURE/FORTIFY TIMES
+         *    | Conn | N0/1 | N2   | N3   | N4   | N5   |
+         * P1 | 1000 | 1000 | 3000 | 5000 | 7000 | 9000 |
+         * P2 | 1000 | 1000 | 2000 | 4000 | 6000 | 8000 |
+         * P3 | 1000 | 1000 | 1000 | 3000 | 5000 | 7000 |
+         * P4 | 1000 | 1000 | 1000 | 2000 | 4000 | 6000 |
+         * P5 | 1000 | 1000 | 1000 | 1000 | 3000 | 5000 |
+         * ---------------------------------------
+         * SERVER CAPTURE TIMES
+         *    | Conn | N0/1 | N2    | N3    | N4    | N5    |
+         * S0 | ???? | ???? | 8000  | 12000 | ????  | ????  |
+         * S1 | 6000 | 6000 | 6000  | 6000  | 6000  | ????? |
+         * S2 | 5000 | 4000 | 7500  | 5000  | 25500 | 36000 |
+         * S3 | 750  | 750  | 1500  | 3250  | 5000  | ????  |
+         * S4 | 666  | ???? | ????  | 2000  | 3000  | 4000  |
+         * S5 | 500  | 750  | 1500  | 2250  | 3750  | 5000  |
          */
-        const captureUpgrade = player.upgrades.get(UpgradeType.CAPTURE);
-        const captureSlowdownMult =
-            (captureUpgrade.maxLevel - captureUpgrade.currentLevel) / captureUpgrade.maxLevel;
-        let time = this.getCaptureLevel(player) * 1000 * (captureSlowdownMult);
+        const upgradeLevel = player.upgrades.get(isFortify ? UpgradeType.FORTIFY : UpgradeType.CAPTURE).currentLevel;
+        let time;
+
+        if (player.isUser) {
+            const baseCapture = this.level * 2000;
+            const captureUpgradeModifier = upgradeLevel * 1000;
+            time = baseCapture - captureUpgradeModifier;
+
+            //Player's capture time can never be less than 1000ms
+            if (time < 1000) {
+                time = 1000;
+            }
+        } else {
+            //TODO: Server capture time is complicated
+            time = 2000;
+        }
 
         if (player.isUser) {
             time *= this.USER_CAPTURE_MULT;
@@ -226,7 +249,7 @@ export default class LevelNode extends NodeData {
     }
 
     getFortifyTime(player: Player): number {
-        return this.getCaptureTime(player);
+        return this.getCaptureTime(player, true);
     }
 
     /**

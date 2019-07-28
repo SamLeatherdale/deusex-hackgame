@@ -16,6 +16,7 @@ export default class Level {
     gridColumns = 0;
     connections: NodeConnection[] = [];
     status: LevelStatus = LevelStatus.INCOMPLETE;
+    difficulty = 0;
 
     isPlayerDetected = false;
     captureTime = 0;
