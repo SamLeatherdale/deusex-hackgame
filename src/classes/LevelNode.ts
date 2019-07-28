@@ -25,7 +25,7 @@ export default class LevelNode extends NodeData {
 
     private readonly FORCE_CAPTURE_DETECTION = DEBUG_MODE && true;
     private readonly FORCE_NO_CAPTURE_DETECTION = DEBUG_MODE && false;
-    private readonly SERVER_CAPTURE_MULT = DEBUG_MODE ? 2 : 1;
+    private readonly SERVER_CAPTURE_MULT = DEBUG_MODE ? 1 : 1;
     private readonly USER_CAPTURE_MULT = DEBUG_MODE ? 1 : 1;
 
     static getKey(x: number, y: number) {
@@ -212,15 +212,6 @@ export default class LevelNode extends NodeData {
          * P3 | 1000 | 1000 | 1000 | 3000 | 5000 | 7000 |
          * P4 | 1000 | 1000 | 1000 | 2000 | 4000 | 6000 |
          * P5 | 1000 | 1000 | 1000 | 1000 | 3000 | 5000 |
-         * ---------------------------------------
-         * SERVER CAPTURE TIMES
-         *    | Conn | N0/1 | N2    | N3    | N4    | N5    |
-         * S0 | ???? | ???? | 8000  | 12000 | ????  | ????  |
-         * S1 | 6000 | 6000 | 6000  | 6000  | 6000  | ????? |
-         * S2 | 5000 | 4000 | 7500  | 5000  | 25500 | 36000 |
-         * S3 | 750  | 750  | 1500  | 3250  | 5000  | ????  |
-         * S4 | 666  | ???? | ????  | 2000  | 3000  | 4000  |
-         * S5 | 500  | 750  | 1500  | 2250  | 3750  | 5000  |
          */
         const upgradeLevel = player.upgrades.get(isFortify ? UpgradeType.FORTIFY : UpgradeType.CAPTURE).currentLevel;
         let time;
@@ -235,8 +226,14 @@ export default class LevelNode extends NodeData {
                 time = 1000;
             }
         } else {
-            //TODO: Server capture time is complicated
-            time = 2000;
+            const baseCapture = (6 - upgradeLevel) * 1000;
+            const levelCapture = 2000 - (upgradeLevel * 250);
+            time = baseCapture + (levelCapture * this.level);
+
+            //Server's capture time can never be less than 750ms
+            if (time < 750) {
+                time = 750;
+            }
         }
 
         if (player.isUser) {
