@@ -1,6 +1,8 @@
 import React, {CSSProperties} from "react";
 import RhombusContainer, {RhombusCorner} from "../classes/RhombusContainer";
 import * as autoBind from "auto-bind";
+import ProgressBar from "./ProgressBar";
+import {condAttr, DXBorderColor, msecToSec} from "../shared";
 
 interface TraceStatusBoxProps {
     time: number; //Time in ms
@@ -34,9 +36,12 @@ class PauseInterval {
 }
 
 export default class TraceStatusBox extends React.Component<TraceStatusBoxProps, TraceStatusBoxState> {
+    private static readonly CRITICAL_TIME_LEFT = 10000;
+
     initialTimeout: number;
     startTimestamp: number;
-    borderStyle: CSSProperties;
+    warningBorderStyle: CSSProperties;
+    criticalBorderStyle: CSSProperties;
     tickHandle: number;
 
     static readonly defaultProps = {
@@ -76,8 +81,15 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
             paused: props.paused
         };
 
-        this.borderStyle = RhombusContainer.getBorderImage({
-            corners: [RhombusCorner.TOP_LEFT, RhombusCorner.BOTTOM_RIGHT],
+        const baseBorder = {
+            corners: [RhombusCorner.TOP_LEFT, RhombusCorner.BOTTOM_RIGHT]
+        };
+        this.warningBorderStyle = RhombusContainer.getBorderImage({
+            ...baseBorder,
+            fgColor: DXBorderColor
+        });
+        this.criticalBorderStyle = RhombusContainer.getBorderImage({
+            ...baseBorder,
             fgColor: "red"
         });
 
@@ -100,6 +112,10 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
         const elapsed = realElapsed - pauseTime;
 
         return this.props.time - elapsed;
+    }
+
+    isCriticalTimeLeft(): boolean {
+        return this.getTimeLeft() <= TraceStatusBox.CRITICAL_TIME_LEFT;
     }
 
     /**
@@ -137,14 +153,23 @@ export default class TraceStatusBox extends React.Component<TraceStatusBoxProps,
 
     render() {
         return (
-            <div className="dx-box trace-status" style={this.borderStyle}>
-                <div className="trace-status-title-box">
-                    <div className="trace-status-title">Tracing Alert</div>
-                    <div className="trace-status-subtitle">Warning</div>
+            <div className="dx-box trace-status"
+                 style={this.isCriticalTimeLeft() ? this.criticalBorderStyle : this.warningBorderStyle}
+                 data-critical={condAttr(this.isCriticalTimeLeft())}
+            >
+                <div className="d-flex">
+                    <div className="trace-status-title-box">
+                        <div className="trace-status-title">Tracing Alert</div>
+                        <div className="trace-status-subtitle">Warning</div>
+                    </div>
+                    <div className="trace-status-timer">
+                        {msecToSec(this.state.timeLeft).toFixed(2)}
+                    </div>
                 </div>
-                <div className="trace-status-timer">
-                    {(this.state.timeLeft / 1000).toFixed(2)}
-                </div>
+                <ProgressBar
+                    bars={10}
+                    barsFilled={Math.ceil(msecToSec(this.getTimeLeft()))}
+                />
             </div>
         )
     }

@@ -91,7 +91,6 @@ $app-container-padding: 10px;
     }
 
     .trace-status {
-        display: flex;
         text-transform: uppercase;
         margin-right: 16px;
 
@@ -124,10 +123,31 @@ $app-container-padding: 10px;
                 font-size: 24px;
             }
         }
+
+        .progress-bar {
+            margin-top: 4px;
+            padding: 0 8px;
+
+            li {
+                &[data-filled] {
+                    background-color: $dx-border-light;
+                }
+            }
+        }
+        &[data-critical] {
+            .progress-bar {
+                li {
+                    &[data-filled] {
+                        background-color: $server-capture-bg;
+                    }
+                }
+            }
+        }
     }
 
     .player-item-bar {
         display: flex;
+        align-items: center;
 
         .player-item {
             display: flex;

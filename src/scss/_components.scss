@@ -1,3 +1,5 @@
+
+
 .rhombus-container {
     position: relative;
 }
@@ -29,5 +31,19 @@ $dx-box-border-width: 20;
 
     &:hover, &[data-active] {
         @extend  .dx-box-fill;
+    }
+}
+.progress-bar {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        width: 8px;
+        height: 15px;
+        transform: skew(-45deg);
+        background-color: #666;
     }
 }
