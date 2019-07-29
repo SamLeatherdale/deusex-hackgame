@@ -13,6 +13,7 @@ import DelayableTimer from "../classes/DelayableTimer";
 import App from "./App";
 import NodePath from "../classes/NodePath";
 import NodeConnection from "../classes/NodeConnection";
+import CapturePercentage from "./CapturePercentage";
 
 interface NodeComponentProps {
     level: Level;
@@ -176,13 +177,19 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         }
     }
 
-    static getMask(key: string, style: CSSProperties, attributes: TypedObj<any> = {}): ReactElement {
+    static getMask(key: string, style: CSSProperties, attributes: TypedObj<any> = {}, ...children: ReactElement[]): ReactElement {
         return (
             <div key={key}
-                 className="level-node-mask"
+                 className="node-mask-container"
                  style={style}
-                 {...condAttrObject(attributes)}
-            />
+            >
+                <div
+                    key={`${key}-mask`}
+                    className="node-mask"
+                    {...condAttrObject(attributes)}
+                />
+                {children}
+            </div>
         )
     }
 
@@ -197,11 +204,13 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
         };
 
         if (node.isCapturing()) {
+            const captureTime = node.getCaptureTime(player);
             masks.push(NodeComponent.getMask("user-capturing",
                 {
-                    animationDuration: `${node.getCaptureTime(player)}ms`,
+                    animationDuration: `${captureTime}ms`,
                     ...maskStyle
-                }, {"data-capturing": 'user'}));
+                }, {"data-capturing": 'user'}, <CapturePercentage
+                        key="capture-percent" time={captureTime} />));
         }
         if (node.isCapturing(true)) {
             masks.push(NodeComponent.getMask("server-capturing",{
@@ -210,10 +219,12 @@ export default class NodeComponent extends React.Component<NodeComponentProps, N
             }, {"data-capturing": 'server', 'data-paused': level.stopWormActive}));
         }
         if (fortifying) {
+            const captureTime = node.getFortifyTime(player);
             masks.push(NodeComponent.getMask("user-fortifying", {
-                animationDuration: `${node.getFortifyTime(player)}ms`,
+                animationDuration: `${captureTime}ms`,
                 ...maskStyle
-            }, {"data-capturing": "fortify"}));
+            }, {"data-capturing": "fortify"}, <CapturePercentage
+                    key="fortify-percent" time={captureTime} />));
         }
         if (node.appearsCaptured()) {
             masks.push(NodeComponent.getMask("user-captured", maskStyle, {"data-captured": true}));

@@ -73,7 +73,7 @@
         }
     }
 
-    .level-node-mask {
+    .node-mask-container {
         $capturing-opacity: 0.2;
         $captured-opacity: 0.5;
         mask-position: center;
@@ -85,51 +85,49 @@
         width: 100%;
         height: 100%;
 
-        &:before {
-            position: absolute;
-            bottom: 0;
-            left: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+
+        .node-mask {
             content: '';
             display: block;
             width: 100%;
             height: 0;
+            order: 1;
 
-        }
-
-        &[data-capturing] {
-            &:before {
+            &[data-capturing] {
                 animation-name: $animation-capture;
                 animation-timing-function: linear;
                 animation-iteration-count: 1;
                 animation-duration: inherit; //Set on parent
             }
-        }
-        &[data-paused] {
-            &:before {
+            &[data-paused] {
                 animation-play-state: paused;
             }
-        }
-        &[data-capturing='user'] {
-            &:before {
+            &[data-capturing='user'] {
                 background-color: rgba($capture-color, $capturing-opacity);
             }
-        }
-        &[data-capturing='server'] {
-            &:before {
+            &[data-capturing='server'] {
                 background-color: rgba($server-capture-color, $capturing-opacity);
             }
-        }
-        &[data-capturing='fortify'] {
-            &:before {
+            &[data-capturing='fortify'] {
                 background-color: rgba($fortify-color, $capturing-opacity);
             }
-        }
-        &[data-captured] {
-            z-index: $zindex-node-mask-captured;
-            &:before {
+            &[data-captured] {
+                z-index: $zindex-node-mask-captured;
                 height: 100%;
                 background-color: rgba($capture-color, $captured-opacity);
             }
+        }
+
+        .node-capture-percent {
+            width: 100%;
+            height: 0;
+            overflow: visible;
+            color: white;
+            z-index: 1;
+            text-align: center;
         }
     }
 }
