@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './components/App';
 import "./scss/index.scss";
 import * as serviceWorker from './serviceWorker';
-export const DEBUG_MODE = true;
+export const DEBUG_MODE = false;
 
 ReactDOM.render(React.createElement(App), document.getElementById('root'));
 
