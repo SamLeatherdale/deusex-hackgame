@@ -26,7 +26,7 @@ export enum AppView {
 }
 
 class AppState {
-    currentView: AppView = AppView.LevelGrid;
+    currentView: AppView;
     level: Level;
     player: Player = new Player();
     server: Player;
@@ -50,11 +50,14 @@ export default class App extends React.Component<{}, AppState> {
         this.state = new AppState();
         autoBind.react(this);
 
-        if (this.state.currentView === AppView.LevelGrid) {
+        const defaultView = AppView.LevelGrid;
+
+        //TODO: Don't require level to be loaded when defaulting to grid view
+        if (true || this.state.currentView === AppView.LevelGrid) {
             //We must initialize properly
             Object.assign(this.state,
                 App.getLevelState(Object.values(AllLevelData)[App.DEFAULT_LEVEL]));
-
+            Object.assign(this.state, {currentView: defaultView});
         }
     }
 
