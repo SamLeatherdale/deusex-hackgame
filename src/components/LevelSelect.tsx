@@ -1,5 +1,6 @@
 import React from "react";
 import LevelData from "../classes/LevelData";
+import AppIcon from "./AppIcon";
 
 interface LevelSelectProps {
     levels: LevelData[];
@@ -10,6 +11,7 @@ export default class LevelSelect extends React.Component<LevelSelectProps> {
     render() {
         return (
             <div className='level-select-grid'>
+                {/*<AppIcon/>*/}
                 {this.props.levels.map((level, i) => {
                     return (
                         <div

@@ -53,6 +53,11 @@ $ipad-port: 1023px;
     }
 }
 
+@mixin square($size) {
+    width: $size;
+    height: $size;
+}
+
 @mixin dx-border {
     border: 2px solid $dx-border-light;
     border-radius: 8px;

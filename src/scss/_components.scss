@@ -47,3 +47,13 @@ $dx-box-border-width: 20;
         background-color: #666;
     }
 }
+
+#app-icon-box {
+    @include square(128px);
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
